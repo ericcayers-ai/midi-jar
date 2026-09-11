@@ -102,17 +102,15 @@ describe('chord suggestion engine', () => {
     const tonics = ['C', 'D', 'E', 'F', 'G', 'A', 'B'].flatMap((letter) =>
       ['bb', 'b', '', '#', '##'].map((accidental) => `${letter}${accidental}`)
     );
+    const scaleAliases: Record<string, string> = {
+      ionian: 'major',
+      aeolian_h: 'harmonic minor',
+      aeolian_m: 'melodic minor',
+    };
     const scaleTypes = [...Scale.names(), 'ionian', 'aeolian_h', 'aeolian_m'];
 
     scaleTypes.forEach((scaleType) => {
-      const tonalName =
-        scaleType === 'ionian'
-          ? 'major'
-          : scaleType === 'aeolian_h'
-          ? 'harmonic minor'
-          : scaleType === 'aeolian_m'
-          ? 'melodic minor'
-          : scaleType;
+      const tonalName = scaleAliases[scaleType] || scaleType;
       tonics.forEach((tonic) => {
         const expectedScale = Scale.get(`${tonic} ${tonalName}`);
         const field = buildDiatonicField(tonic, scaleType);
@@ -128,6 +126,12 @@ describe('chord suggestion engine', () => {
   });
 
   it('supports triad, seventh, and extended voicings for every scale type', () => {
+    const voicingSizes: Record<string, number> = {
+      triads: 3,
+      sevenths: 4,
+      extended: 7,
+    };
+
     Scale.names().forEach((mode) => {
       ['triads', 'sevenths', 'extended'].forEach((extensionComplexity) => {
         const field = buildDiatonicField('C', mode);
@@ -142,10 +146,7 @@ describe('chord suggestion engine', () => {
         expect(suggestions).toHaveLength(field.length);
         suggestions.forEach(({ chord }) => {
           expect(chord.notes.length).toBe(
-            Math.min(
-              extensionComplexity === 'triads' ? 3 : extensionComplexity === 'sevenths' ? 4 : 7,
-              field.length
-            )
+            Math.min(voicingSizes[extensionComplexity], field.length)
           );
           expect(chord.intervals).toHaveLength(chord.notes.length);
         });

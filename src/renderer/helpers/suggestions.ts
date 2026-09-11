@@ -237,6 +237,13 @@ function degreeLabel(mode: SuggesterMode, index: number) {
   return MODE_ROMANS[legacyMode]?.[index] || SCALE_DEGREE_LABELS[index] || `${index + 1}`;
 }
 
+function rootDistance(from: string, to: string) {
+  const fromChroma = Note.chroma(from);
+  const toChroma = Note.chroma(to);
+  if (fromChroma === undefined || toChroma === undefined) return null;
+  return (toChroma - fromChroma + 12) % 12;
+}
+
 function harmonicFunctionForDegree(root: string, tonic: string, index: number): HarmonicFunction {
   if (index === 0) return 'T';
   if (rootDistance(tonic, root) === 7) return 'D';
@@ -284,13 +291,6 @@ function chordFromNotes(root: string, notes: string[], degreeIndex: number, scal
 
 function chordRoot(chord: DetectedChord) {
   return chord.tonic || chord.root || null;
-}
-
-function rootDistance(from: string, to: string) {
-  const fromChroma = Note.chroma(from);
-  const toChroma = Note.chroma(to);
-  if (fromChroma === undefined || toChroma === undefined) return null;
-  return (toChroma - fromChroma + 12) % 12;
 }
 
 export function buildDiatonicField(
