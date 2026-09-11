@@ -44,7 +44,7 @@ const ChordSuggesterSettings: React.FC = () => {
           <FormField label="Mode" hint="The scale and diatonic chord field used for ranking">
             <Select
               options={fields.mode.choices}
-              onChange={(value) => updateSetting('chordSuggester.mode', value)}
+              onChange={(value: string) => updateSetting('chordSuggester.mode', value)}
               value={config.mode}
             />
           </FormField>
@@ -52,7 +52,7 @@ const ChordSuggesterSettings: React.FC = () => {
           <FormField label="Style" hint="Changes progression priorities and chord extensions">
             <Select
               options={fields.style.choices}
-              onChange={(value) => updateSetting('chordSuggester.style', value)}
+              onChange={(value: string) => updateSetting('chordSuggester.style', value)}
               value={config.style}
             />
           </FormField>
@@ -73,7 +73,9 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Select
               options={fields.extensionComplexity.choices}
-              onChange={(value) => updateSetting('chordSuggester.extensionComplexity', value)}
+              onChange={(value: string) =>
+                updateSetting('chordSuggester.extensionComplexity', value)
+              }
               value={config.extensionComplexity}
             />
           </FormField>
@@ -85,7 +87,7 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Switch
               checked={config.allowOmissions}
-              onChange={(value) => updateSetting('chordSuggester.allowOmissions', value)}
+              onChange={(value: boolean) => updateSetting('chordSuggester.allowOmissions', value)}
             />
           </FormControlLabel>
 
@@ -96,7 +98,7 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Switch
               checked={config.useSustain}
-              onChange={(value) => updateSetting('chordSuggester.useSustain', value)}
+              onChange={(value: boolean) => updateSetting('chordSuggester.useSustain', value)}
             />
           </FormControlLabel>
 
@@ -107,7 +109,7 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Switch
               checked={config.detectOnRelease}
-              onChange={(value) => updateSetting('chordSuggester.detectOnRelease', value)}
+              onChange={(value: boolean) => updateSetting('chordSuggester.detectOnRelease', value)}
             />
           </FormControlLabel>
 
@@ -118,14 +120,14 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Switch
               checked={config.displayKeyboard}
-              onChange={(value) => updateSetting('chordSuggester.displayKeyboard', value)}
+              onChange={(value: boolean) => updateSetting('chordSuggester.displayKeyboard', value)}
             />
           </FormControlLabel>
 
           <FormControlLabel label="Display notation" hint="Show the live notes on a staff" reverse>
             <Switch
               checked={config.displayNotation}
-              onChange={(value) => updateSetting('chordSuggester.displayNotation', value)}
+              onChange={(value: boolean) => updateSetting('chordSuggester.displayNotation', value)}
             />
           </FormControlLabel>
 
@@ -136,7 +138,7 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Switch
               checked={config.displayReason}
-              onChange={(value) => updateSetting('chordSuggester.displayReason', value)}
+              onChange={(value: boolean) => updateSetting('chordSuggester.displayReason', value)}
             />
           </FormControlLabel>
 
@@ -147,7 +149,7 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Switch
               checked={config.showHistory}
-              onChange={(value) => updateSetting('chordSuggester.showHistory', value)}
+              onChange={(value: boolean) => updateSetting('chordSuggester.showHistory', value)}
             />
           </FormControlLabel>
 
@@ -158,7 +160,9 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Switch
               checked={config.considerPreviousChord}
-              onChange={(value) => updateSetting('chordSuggester.considerPreviousChord', value)}
+              onChange={(value: boolean) =>
+                updateSetting('chordSuggester.considerPreviousChord', value)
+              }
             />
           </FormControlLabel>
 
@@ -169,7 +173,7 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Switch
               checked={config.audition}
-              onChange={(value) => updateSetting('chordSuggester.audition', value)}
+              onChange={(value: boolean) => updateSetting('chordSuggester.audition', value)}
             />
           </FormControlLabel>
 
@@ -179,7 +183,7 @@ const ChordSuggesterSettings: React.FC = () => {
           >
             <Select
               options={physicalOutputOptions}
-              onChange={(value) => updateSetting('chordSuggester.auditionOutput', value)}
+              onChange={(value: string) => updateSetting('chordSuggester.auditionOutput', value)}
               value={config.auditionOutput}
               disabled={!config.audition}
             />

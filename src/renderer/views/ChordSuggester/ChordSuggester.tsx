@@ -41,6 +41,7 @@ const ChordSuggester: React.FC = () => {
         .slice(1)
         .map((symbol) => {
           const root = TonalChord.get(symbol).tonic;
+          if (!root) return undefined;
           return field.find((candidate) => Note.chroma(candidate.root) === Note.chroma(root))
             ?.roman;
         })
@@ -80,7 +81,7 @@ const ChordSuggester: React.FC = () => {
     () =>
       activeSuggestion?.chord.notes.flatMap((note) => {
         const midi = Note.midi(`${note}4`);
-        return midi === null ? [] : [midi];
+        return typeof midi === 'number' ? [midi] : [];
       }),
     [activeSuggestion]
   );
@@ -113,7 +114,7 @@ const ChordSuggester: React.FC = () => {
       config.auditionOutput,
       suggestion.chord.notes.flatMap((note) => {
         const midi = Note.midi(`${note}4`);
-        return midi === null ? [] : [midi];
+        return typeof midi === 'number' ? [midi] : [];
       })
     );
   };

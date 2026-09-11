@@ -100,11 +100,11 @@ This confirms tonal alone supplies diatonic chords, harmonic function, modal sca
 Layout (reusing existing components — `PianoKeyboard`, `ChordName`, `ChordNameLink`, `Notation`):
 - **Header strip:** current Key + Mode + Style selectors (mirrors Circle-of-Fifths settings controls), always visible.
 - **Now Playing:** the live-detected chord big and centered (`ChordNameLink chord={chords[0]}`) with its Roman-numeral degree badge and scale-degree label — reuses the exact render path Chord Display uses.
-- **Suggestions row:** 3 cards, each a `ChordNameLink` for the suggested chord + a small "reason" caption + confidence dot. Clicking a card can (a) highlight those notes on the keyboard, and (b) optionally audition it through the internal MIDI output (`main/midi/InternalOutput.ts`) — a genuine upgrade over the reference's text-only output.
+- **Suggestions row:** 3 action cards, each displaying the suggested chord + a small "reason" caption + confidence bar. Clicking a card highlights those notes on the keyboard and, when configured, sends a short note-on/note-off phrase to one selected physical MIDI output.
 - **Keyboard:** `PianoKeyboard` at the bottom showing what's held now; on suggestion hover, ghost-highlight the suggested chord's notes so the player sees the shape before playing it.
 - **Optional "progression trail":** last 3–4 chords played, so suggestions can consider recent context (the reference only looks at the current chord — cheap win to consider the previous one for ii–V–I detection).
 
-**Settings drawer** (`ChordSuggesterSettings` view + the `DrawerOutlet` pattern): tonic, mode, style, number of suggestions, extension complexity (triads↔13ths), audition on/off, show-reason on/off, consider-previous-chord on/off, notation preference.
+**Settings drawer** (`ChordSuggesterSettings` view + the `DrawerOutlet` pattern): tonic, mode, style, number of suggestions, extension complexity (triads↔13ths), audition on/off, selected physical audition output, show-reason on/off, consider-previous-chord on/off, and display toggles.
 
 **Overlay:** register the route with the HTTP/WS server like the other modules so it's usable as an OBS BrowserSource for streamers (a stated MIDI Jar audience).
 
@@ -135,7 +135,7 @@ Layout (reusing existing components — `PianoKeyboard`, `ChordName`, `ChordName
 - **Exit criterion:** tab appears, navigates, renders live chord + suggestions from a real/virtual MIDI input.
 
 ### Phase 4 — Interaction polish
-- Suggestion click → keyboard highlight + optional audition via internal output.
+- Suggestion click → keyboard highlight + optional audition via the selected physical output.
 - Previous-chord context, reason captions, confidence display.
 - Overlay/server exposure parity with other modules.
 - **Exit criterion:** clicking a suggestion highlights/auditions; overlay URL renders the tab.
@@ -160,11 +160,23 @@ Layout (reusing existing components — `PianoKeyboard`, `ChordName`, `ChordName
 
 ---
 
-## 8. Immediate next actions
+## 8. Implementation status
 
-1. Phase 0: `nvm use 18 && npm install && npm run start` + `npm test` to capture the green baseline (the fork is cloned at `C:/Users/ericc/Projects/midi-jar-fork`, branch `feature/chord-suggester`).
-2. Phase 1: write `suggestions.ts` + tests (pure logic, no app changes) — highest-value, lowest-risk, fully verifiable in isolation.
-3. Open a draft PR from `feature/chord-suggester` early so the roadmap and phased commits are reviewable.
+Implemented on `feature/chord-suggester`:
+
+- Pure deterministic suggestion engine with unit tests for all nine modes, V→I ranking, modal characteristic chords, key spelling, empty input, and repeatability.
+- Version 1.8.0 settings defaults, generated schema, migration, and previous-chord context.
+- Desktop and overlay routes, home tiles, settings drawer, responsive live view, keyboard ghost highlighting, and selected-output audition bridge.
+- README and changelog documentation.
+
+Repository-wide npm test/type/lint/build commands are currently blocked before execution because the host npm rejects the repository's existing `devEngines.node` property, and `npm ci` separately refuses the locked GitHub Packages license dependency with `EALLOWREMOTE`. Focused engine and source checks are recorded in the implementation handoff.
+
+## 9. Immediate next actions
+
+1. Run `npm ci` under the repository's supported Node/npm toolchain with authorized access to the locked `@la-jarre-a-son/nlf` package.
+2. Run `npm test`, `npm run types`, `npm run lint`, and `npm run build` in that environment.
+3. Launch the built app with a virtual MIDI route, exercise the desktop and `/suggestions` overlay paths, and visually inspect the rendered module.
+4. Open a draft PR from `feature/chord-suggester` after those environment-gated checks.
 
 ---
 
