@@ -16,17 +16,15 @@ const cx = classnames.bind(styles);
 const ChordSuggester: React.FC = () => {
   const { settings } = useSettings();
   const config = settings.chordSuggester;
-  const { midiNotes, sustainedMidiNotes, playedMidiNotes, chords, params } = useNotes(
-    {
-      key: 'C',
-      accidentals: settings.notation.accidentals,
-      midiChannel: 0,
-      allowOmissions: config.allowOmissions,
-      useSustain: config.useSustain,
-      detectOnRelease: config.detectOnRelease,
-      disabledChords: settings.chordDictionary.disabled,
-    }
-  );
+  const { midiNotes, sustainedMidiNotes, playedMidiNotes, chords, params } = useNotes({
+    key: 'C',
+    accidentals: settings.notation.accidentals,
+    midiChannel: 0,
+    allowOmissions: config.allowOmissions,
+    useSustain: config.useSustain,
+    detectOnRelease: config.detectOnRelease,
+    disabledChords: settings.chordDictionary.disabled,
+  });
   const [history, setHistory] = useState<string[]>([]);
   const [activeSuggestion, setActiveSuggestion] = useState<ChordSuggestion | null>(null);
   const [auditionMessage, setAuditionMessage] = useState<string | null>(null);
