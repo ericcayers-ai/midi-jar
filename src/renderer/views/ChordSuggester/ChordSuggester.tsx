@@ -233,7 +233,7 @@ const ChordSuggester: React.FC = () => {
             played={playedMidiNotes}
             midi={midiNotes}
             targets={activeTargets}
-            chord={chords[0]}
+            chord={chords[0] ?? undefined}
           />
           <p className={cx('keyboardHint')}>
             Hover a suggestion to preview its shape on the keyboard.
