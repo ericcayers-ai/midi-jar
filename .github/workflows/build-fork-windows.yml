@@ -10,7 +10,7 @@ permissions:
 jobs:
   build:
     if: github.repository == 'ericcayers-ai/midi-jar'
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Check out this fork only
