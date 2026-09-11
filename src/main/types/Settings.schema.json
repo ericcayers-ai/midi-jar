@@ -275,6 +275,9 @@
                 "auditionOutput": {
                     "type": "string"
                 },
+                "considerPreviousChord": {
+                    "type": "boolean"
+                },
                 "detectOnRelease": {
                     "type": "boolean"
                 },

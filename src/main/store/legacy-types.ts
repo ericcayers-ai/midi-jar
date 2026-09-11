@@ -293,6 +293,7 @@ export type v1_8_0_ChordSuggesterSettings = {
   displayNotation: boolean;
   displayReason: boolean;
   showHistory: boolean;
+  considerPreviousChord: boolean;
   audition: boolean;
   auditionOutput: string;
 };

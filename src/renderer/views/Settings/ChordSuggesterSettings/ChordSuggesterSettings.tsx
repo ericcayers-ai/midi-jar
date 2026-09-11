@@ -152,6 +152,17 @@ const ChordSuggesterSettings: React.FC = () => {
           </FormControlLabel>
 
           <FormControlLabel
+            label="Consider previous chord"
+            hint="Use recent harmonic context when ranking the next chord"
+            reverse
+          >
+            <Switch
+              checked={config.considerPreviousChord}
+              onChange={(value) => updateSetting('chordSuggester.considerPreviousChord', value)}
+            />
+          </FormControlLabel>
+
+          <FormControlLabel
             label="Enable audition"
             hint="Allow clicking a suggestion to send it to one selected MIDI output"
             reverse

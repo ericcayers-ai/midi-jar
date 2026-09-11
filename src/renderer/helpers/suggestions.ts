@@ -31,7 +31,7 @@ export type DiatonicChord = {
   roman: string;
   quality: 'major' | 'minor' | 'diminished' | 'augmented';
   harmonicFunction: HarmonicFunction;
-  chord: TonalChord;
+  chord: ReturnType<typeof TonalChord.get>;
 };
 
 export type ChordSuggestion = DiatonicChord & {

@@ -1,3 +1,10 @@
+# 1.8.0 (Unreleased)
+
+## Features
+- **Chord Suggester**: live chord detection with deterministic next-chord suggestions across nine modes and four style presets
+- **Chord Suggester**: optional piano ghost highlighting, recent-chord trail, and key/mode-aware harmonic explanations
+- **MIDI**: audition selected suggestions through a chosen physical output
+
 # 1.7.0 (2024-01-05)
 
 ## Features

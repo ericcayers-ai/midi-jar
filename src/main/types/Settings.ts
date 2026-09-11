@@ -73,6 +73,7 @@ export type ChordSuggesterSettings = {
   displayNotation: boolean;
   displayReason: boolean;
   showHistory: boolean;
+  considerPreviousChord: boolean;
   audition: boolean;
   auditionOutput: string;
 };

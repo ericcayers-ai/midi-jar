@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import classnames from 'classnames/bind';
-import { Note } from 'tonal';
+import { Chord as TonalChord, Note } from 'tonal';
 
 import { useSettings } from 'renderer/contexts/Settings';
 import useNotes from 'renderer/hooks/useNotes';
@@ -35,6 +35,18 @@ const ChordSuggester: React.FC = () => {
     () => buildDiatonicField(config.tonic, config.mode),
     [config.tonic, config.mode]
   );
+  const historyRomans = useMemo(
+    () =>
+      history
+        .slice(1)
+        .map((symbol) => {
+          const root = TonalChord.get(symbol).tonic;
+          return field.find((candidate) => Note.chroma(candidate.root) === Note.chroma(root))
+            ?.roman;
+        })
+        .filter((roman): roman is string => !!roman),
+    [field, history]
+  );
   const suggestions = useMemo(
     () =>
       getChordSuggestions({
@@ -44,6 +56,7 @@ const ChordSuggester: React.FC = () => {
         extensionComplexity: config.extensionComplexity,
         currentChord: chords[0],
         count: config.suggestionCount,
+        recentRomans: config.considerPreviousChord ? historyRomans : undefined,
       }),
     [
       chords,
@@ -52,6 +65,8 @@ const ChordSuggester: React.FC = () => {
       config.style,
       config.extensionComplexity,
       config.suggestionCount,
+      config.considerPreviousChord,
+      historyRomans,
     ]
   );
   const currentDegree = useMemo(() => {
@@ -87,6 +102,10 @@ const ChordSuggester: React.FC = () => {
     }
     if (!config.auditionOutput) {
       setAuditionMessage('Select a MIDI output in Settings to audition suggestions.');
+      return;
+    }
+    if (!window.midi) {
+      setAuditionMessage('Audition is available from the desktop app, not the external overlay.');
       return;
     }
     setAuditionMessage(`Sent ${suggestion.symbol} to ${config.auditionOutput}.`);

@@ -75,6 +75,7 @@ export const defaultChordSuggesterSettings: ChordSuggesterSettings = {
   displayNotation: false,
   displayReason: true,
   showHistory: true,
+  considerPreviousChord: true,
   audition: false,
   auditionOutput: '',
 };
