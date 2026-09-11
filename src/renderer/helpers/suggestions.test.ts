@@ -1,10 +1,6 @@
 import { Chord } from 'tonal';
 
-import {
-  buildDiatonicField,
-  getChordSuggestions,
-  type DetectedChord,
-} from './suggestions';
+import { buildDiatonicField, getChordSuggestions, type DetectedChord } from './suggestions';
 
 describe('chord suggestion engine', () => {
   it('builds the expected diatonic triad qualities for every supported mode', () => {
@@ -21,7 +17,9 @@ describe('chord suggestion engine', () => {
     };
 
     Object.entries(expected).forEach(([mode, qualities]) => {
-      expect(buildDiatonicField('C', mode as never).map(({ quality }) => quality)).toEqual(qualities);
+      expect(buildDiatonicField('C', mode as never).map(({ quality }) => quality)).toEqual(
+        qualities
+      );
     });
   });
 
@@ -90,8 +88,8 @@ describe('chord suggestion engine', () => {
       count: 3,
     });
 
-    expect(suggestions.some(({ roman, reason }) => roman === '♭VII' && reason.includes('modal'))).toBe(
-      true
-    );
+    expect(
+      suggestions.some(({ roman, reason }) => roman === '♭VII' && reason.includes('modal'))
+    ).toBe(true);
   });
 });

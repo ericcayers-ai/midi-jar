@@ -264,6 +264,82 @@
             },
             "type": "object"
         },
+        "chordSuggester": {
+            "properties": {
+                "allowOmissions": {
+                    "type": "boolean"
+                },
+                "audition": {
+                    "type": "boolean"
+                },
+                "auditionOutput": {
+                    "type": "string"
+                },
+                "detectOnRelease": {
+                    "type": "boolean"
+                },
+                "displayKeyboard": {
+                    "type": "boolean"
+                },
+                "displayNotation": {
+                    "type": "boolean"
+                },
+                "displayReason": {
+                    "type": "boolean"
+                },
+                "extensionComplexity": {
+                    "enum": [
+                        "extended",
+                        "sevenths",
+                        "triads"
+                    ],
+                    "type": "string"
+                },
+                "mode": {
+                    "enum": [
+                        "aeolian",
+                        "aeolian_h",
+                        "aeolian_m",
+                        "dorian",
+                        "ionian",
+                        "locrian",
+                        "lydian",
+                        "mixolydian",
+                        "phrygian"
+                    ],
+                    "type": "string"
+                },
+                "showHistory": {
+                    "type": "boolean"
+                },
+                "style": {
+                    "enum": [
+                        "classical",
+                        "jazz",
+                        "modal",
+                        "pop"
+                    ],
+                    "type": "string"
+                },
+                "suggestionCount": {
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ],
+                    "type": "number"
+                },
+                "tonic": {
+                    "type": "string"
+                },
+                "useSustain": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
         "circleOfFifths": {
             "properties": {
                 "displayAlterations": {

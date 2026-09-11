@@ -147,6 +147,10 @@ ipcMain.on('midi:deleteRoute', (_event, route: ApiMidiRoute) => {
   midi.deleteRoute(route);
 });
 
+ipcMain.handle('midi:audition', (_event, outputName: string, notes: number[]) =>
+  midi.audition(outputName, notes)
+);
+
 ipcMain.on('midi:getInputs', (event) => {
   const inputs = midi.getInputs();
   event.reply('midi:inputs', inputs);

@@ -270,3 +270,33 @@ export type v1_7_0_Settings = {
   circleOfFifths: v1_2_0_CircleOfFifthsSettings;
   notation: v1_2_0_NotationSettings;
 };
+
+export type v1_8_0_ChordSuggesterSettings = {
+  tonic: string;
+  mode:
+    | 'ionian'
+    | 'dorian'
+    | 'phrygian'
+    | 'lydian'
+    | 'mixolydian'
+    | 'aeolian'
+    | 'aeolian_h'
+    | 'aeolian_m'
+    | 'locrian';
+  style: 'pop' | 'jazz' | 'classical' | 'modal';
+  suggestionCount: 1 | 2 | 3 | 4 | 5;
+  extensionComplexity: 'triads' | 'sevenths' | 'extended';
+  allowOmissions: boolean;
+  useSustain: boolean;
+  detectOnRelease: boolean;
+  displayKeyboard: boolean;
+  displayNotation: boolean;
+  displayReason: boolean;
+  showHistory: boolean;
+  audition: boolean;
+  auditionOutput: string;
+};
+
+export type v1_8_0_Settings = v1_7_0_Settings & {
+  chordSuggester: v1_8_0_ChordSuggesterSettings;
+};

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 429" role="img" aria-labelledby="title desc">
+  <title id="title">Chord Suggester</title>
+  <desc id="desc">A live harmony display with a current chord and three possible next chords.</desc>
+  <rect width="640" height="429" fill="#171923"/>
+  <path d="M0 330C110 260 180 365 290 294s190-4 350-98v233H0Z" fill="#242a46"/>
+  <g fill="none" stroke="#8da9ff" stroke-width="4" opacity=".9">
+    <path d="M62 116h166M62 137h166M62 158h166M62 179h166"/>
+    <path d="M112 105v91M160 105v91M208 105v91"/>
+    <circle cx="112" cy="196" r="16" fill="#8da9ff" stroke="none"/>
+    <circle cx="160" cy="180" r="16" fill="#8da9ff" stroke="none"/>
+    <circle cx="208" cy="164" r="16" fill="#8da9ff" stroke="none"/>
+  </g>
+  <g fill="#f4f4f5" font-family="sans-serif">
+    <text x="354" y="104" font-size="18" opacity=".6">NOW PLAYING</text>
+    <text x="354" y="170" font-size="64" font-weight="700">G7</text>
+    <text x="354" y="204" font-size="18" fill="#8da9ff">V · DOMINANT</text>
+    <text x="62" y="278" font-size="18" opacity=".6">TRY ONE OF THESE</text>
+    <text x="62" y="332" font-size="36" font-weight="700">C</text>
+    <text x="196" y="332" font-size="36" font-weight="700">Am</text>
+    <text x="370" y="332" font-size="36" font-weight="700">Em</text>
+  </g>
+  <g fill="#8da9ff"><rect x="62" y="350" width="104" height="4" rx="2"/><rect x="196" y="350" width="84" height="4" rx="2"/><rect x="370" y="350" width="70" height="4" rx="2"/></g>
+</svg>

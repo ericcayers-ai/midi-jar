@@ -2,6 +2,7 @@ import {
   ChordDictionarySettings,
   ChordDisplaySettings,
   ChordQuizSettings,
+  ChordSuggesterSettings,
   CircleOfFifthsSettings,
   KeyboardSettings,
   NotationSettings,
@@ -61,6 +62,23 @@ export const defaultChordQuizSettings: ChordQuizSettings = {
   displayIntervals: true,
 };
 
+export const defaultChordSuggesterSettings: ChordSuggesterSettings = {
+  tonic: 'C',
+  mode: 'ionian',
+  style: 'pop',
+  suggestionCount: 3,
+  extensionComplexity: 'triads',
+  allowOmissions: true,
+  useSustain: true,
+  detectOnRelease: true,
+  displayKeyboard: true,
+  displayNotation: false,
+  displayReason: true,
+  showHistory: true,
+  audition: false,
+  auditionOutput: '',
+};
+
 export const defaultCircleOfFifthsSettings: CircleOfFifthsSettings = {
   scale: 'major' as const,
   highlightSector: 'chord' as const,
@@ -115,6 +133,7 @@ export const defaults: StoreType = {
     },
     chordDisplay: [defaultChordDisplaySettings],
     chordQuiz: defaultChordQuizSettings,
+    chordSuggester: defaultChordSuggesterSettings,
     circleOfFifths: defaultCircleOfFifthsSettings,
     chordDictionary: defaultChordDictionarySettings,
     notation: defaultNotationSettings,

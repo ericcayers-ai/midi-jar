@@ -8,6 +8,7 @@ import { MidiRoute, MidiRouteRaw } from './MidiRoute';
 import { MidiDeviceManager } from './MidiDeviceManager';
 import { MidiInput } from './MidiInput';
 import { MidiOutput } from './MidiOutput';
+import { MidiOutputDevice } from './MidiOutputDevice';
 import { MidiWire } from './MidiWire';
 
 const debug = makeDebug('app:midi');
@@ -92,6 +93,25 @@ export function getInputs() {
 
 export function getOutputs() {
   return manager.getOutputs().map((o: MidiOutput) => o.toApi());
+}
+
+export function audition(outputName: string, notes: number[], duration = 600) {
+  const output = manager.getOutputs().find((candidate) => candidate.name === outputName);
+  const validNotes = [...new Set(notes)].filter(
+    (note) => Number.isInteger(note) && note >= 0 && note <= 127
+  );
+
+  if (!(output instanceof MidiOutputDevice) || !output.connected || !validNotes.length)
+    return false;
+
+  output.open();
+  const timestamp = Date.now();
+  validNotes.forEach((note) => output.send([0x90, note, 96], timestamp, 'chord-suggester'));
+  setTimeout(() => {
+    validNotes.forEach((note) => output.send([0x80, note, 0], Date.now(), 'chord-suggester'));
+  }, duration);
+
+  return true;
 }
 
 export function getWires() {

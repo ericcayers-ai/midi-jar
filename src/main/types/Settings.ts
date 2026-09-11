@@ -51,6 +51,32 @@ export type ChordQuizSettings = {
   displayIntervals: boolean;
 };
 
+export type ChordSuggesterSettings = {
+  tonic: string;
+  mode:
+    | 'ionian'
+    | 'dorian'
+    | 'phrygian'
+    | 'lydian'
+    | 'mixolydian'
+    | 'aeolian'
+    | 'aeolian_h'
+    | 'aeolian_m'
+    | 'locrian';
+  style: 'pop' | 'jazz' | 'classical' | 'modal';
+  suggestionCount: 1 | 2 | 3 | 4 | 5;
+  extensionComplexity: 'triads' | 'sevenths' | 'extended';
+  allowOmissions: boolean;
+  useSustain: boolean;
+  detectOnRelease: boolean;
+  displayKeyboard: boolean;
+  displayNotation: boolean;
+  displayReason: boolean;
+  showHistory: boolean;
+  audition: boolean;
+  auditionOutput: string;
+};
+
 export type CircleOfFifthsSettings = {
   scale: 'major' | 'minor';
   highlightSector: 'chord' | 'notes';
@@ -97,6 +123,7 @@ export type Settings = {
   general: GeneralSettings;
   chordDisplay: ChordDisplaySettings[];
   chordQuiz: ChordQuizSettings;
+  chordSuggester: ChordSuggesterSettings;
   circleOfFifths: CircleOfFifthsSettings;
   chordDictionary: ChordDictionarySettings;
   notation: NotationSettings;

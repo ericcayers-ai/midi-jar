@@ -237,7 +237,8 @@ function styledSymbol(
 
   if (quality === 'diminished') return extensionComplexity === 'extended' ? `${root}m7b5` : base;
   if (quality === 'augmented') return extensionComplexity === 'extended' ? `${root}aug7` : base;
-  if (harmonicFunction === 'D') return extensionComplexity === 'extended' ? `${root}13` : `${root}7`;
+  if (harmonicFunction === 'D')
+    return extensionComplexity === 'extended' ? `${root}13` : `${root}7`;
   if (quality === 'minor') return extensionComplexity === 'extended' ? `${root}m9` : `${root}m7`;
   return extensionComplexity === 'extended' ? `${root}maj9` : `${root}maj7`;
 }
@@ -291,9 +292,12 @@ function scoreCandidate(
   if (ruleIndex >= 0) score += 120 - ruleIndex * 18;
   if (currentRoman === 'V' && candidate.roman === 'I') score += 44;
   if (currentRoman === 'ii' && candidate.roman === 'V') score += 38;
-  if (current && current.harmonicFunction === 'D' && candidate.harmonicFunction === 'T') score += 32;
-  if (current && current.harmonicFunction === 'SD' && candidate.harmonicFunction === 'D') score += 24;
-  if (current && current.harmonicFunction === 'T' && candidate.harmonicFunction === 'SD') score += 16;
+  if (current && current.harmonicFunction === 'D' && candidate.harmonicFunction === 'T')
+    score += 32;
+  if (current && current.harmonicFunction === 'SD' && candidate.harmonicFunction === 'D')
+    score += 24;
+  if (current && current.harmonicFunction === 'T' && candidate.harmonicFunction === 'SD')
+    score += 16;
   if (current && current.harmonicFunction === candidate.harmonicFunction) score += 4;
 
   const distance = rootDistance(currentRoot, candidate.root);
@@ -356,7 +360,9 @@ export function getChordSuggestions(params: SuggestionParams): ChordSuggestion[]
   if (!currentRoot) return [];
 
   const field = buildDiatonicField(params.tonic, params.mode, params.keySignature);
-  const current = field.find((candidate) => Note.chroma(candidate.root) === Note.chroma(currentRoot));
+  const current = field.find(
+    (candidate) => Note.chroma(candidate.root) === Note.chroma(currentRoot)
+  );
   const count = clamp(params.count ?? 3, 1, 7);
   const candidates: Array<DiatonicChord & { targetRoman?: string; applied?: boolean }> = field.map(
     (candidate) => ({ ...candidate })
@@ -365,7 +371,10 @@ export function getChordSuggestions(params: SuggestionParams): ChordSuggestion[]
   if (params.style === 'jazz' || params.style === 'classical') {
     field.forEach((target, targetIndex) => {
       if (current && targetIndex === field.indexOf(current)) return;
-      const dominantRoot = noteInKeySignature(Note.transpose(target.root, '5P'), params.keySignature);
+      const dominantRoot = noteInKeySignature(
+        Note.transpose(target.root, '5P'),
+        params.keySignature
+      );
       const symbol = `${dominantRoot}7`;
       candidates.push({
         root: dominantRoot,
@@ -405,7 +414,10 @@ export function getChordSuggestions(params: SuggestionParams): ChordSuggestion[]
       };
     })
     .sort((a, b) => b._score - a._score || a._index - b._index)
-    .filter((suggestion, index, all) => all.findIndex((item) => item.symbol === suggestion.symbol) === index)
+    .filter(
+      (suggestion, index, all) =>
+        all.findIndex((item) => item.symbol === suggestion.symbol) === index
+    )
     .slice(0, count)
     .map(({ _score, _index, ...suggestion }) => suggestion);
 }

@@ -73,6 +73,8 @@ export const MidiApi = {
   onWires: (callback: (outputs: ApiMidiWire[]) => void) => registerListener('midi:wires')(callback),
   onLatency: (callback: (latency: number, device: string) => void) =>
     registerListener('midi:activity')(callback),
+  audition: (outputName: string, notes: number[]) =>
+    ipcRenderer.invoke('midi:audition', outputName, notes),
   onMidiMessage: (
     namespace: string,
     callback: (message: MidiMessage, timestamp: number, device: string) => void

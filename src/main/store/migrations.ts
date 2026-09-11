@@ -2,6 +2,7 @@
 import { Migrations } from 'conf/dist/source/types';
 import Conf from 'conf';
 import { StoreType } from '../types/Store';
+import { defaultChordSuggesterSettings } from './defaults';
 import {
   v1_0_0_MidiRouteRaw,
   v1_1_0_Settings,
@@ -19,6 +20,7 @@ import {
   v1_6_0_Settings,
   v1_7_0_ChordDisplaySettings,
   v1_7_0_Settings,
+  v1_8_0_Settings,
 } from './legacy-types';
 
 const migrations: Migrations<StoreType> = {
@@ -343,6 +345,19 @@ const migrations: Migrations<StoreType> = {
         disabled: [],
         aliases: [['maj', '']],
       },
+    };
+
+    store.set('settings', newSettings);
+  },
+  '1.8.0': (store: Conf<StoreType>) => {
+    store.set('version', '1.8.0');
+
+    const settings = store.get('settings') as unknown as v1_7_0_Settings;
+    if ((settings as Partial<v1_8_0_Settings>).chordSuggester) return;
+
+    const newSettings: v1_8_0_Settings = {
+      ...settings,
+      chordSuggester: defaultChordSuggesterSettings,
     };
 
     store.set('settings', newSettings);
