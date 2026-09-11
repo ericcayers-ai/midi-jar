@@ -21,6 +21,7 @@ import {
   v1_7_0_ChordDisplaySettings,
   v1_7_0_Settings,
   v1_8_0_Settings,
+  v1_9_0_Settings,
 } from './legacy-types';
 
 const migrations: Migrations<StoreType> = {
@@ -358,6 +359,20 @@ const migrations: Migrations<StoreType> = {
     const newSettings: v1_8_0_Settings = {
       ...settings,
       chordSuggester: defaultChordSuggesterSettings,
+    };
+
+    store.set('settings', newSettings);
+  },
+  '1.9.0': (store: Conf<StoreType>) => {
+    store.set('version', '1.9.0');
+
+    const settings = store.get('settings') as unknown as v1_8_0_Settings;
+    const newSettings: v1_9_0_Settings = {
+      ...settings,
+      chordSuggester: {
+        ...defaultChordSuggesterSettings,
+        ...settings.chordSuggester,
+      },
     };
 
     store.set('settings', newSettings);

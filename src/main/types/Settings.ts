@@ -57,6 +57,11 @@ export type ChordSuggesterSettings = {
   style: 'pop' | 'jazz' | 'classical' | 'modal';
   suggestionCount: number;
   extensionComplexity: 'triads' | 'sevenths' | 'extended';
+  autoHelperMode: 'simple' | 'advanced';
+  autoScaleScope: 'common' | 'all';
+  autoEvidence: 'balanced' | 'notes' | 'chords';
+  autoMinimumConfidence: number;
+  autoRegisterWhileRecording: boolean;
   allowOmissions: boolean;
   useSustain: boolean;
   detectOnRelease: boolean;

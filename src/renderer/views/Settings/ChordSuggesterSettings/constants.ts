@@ -59,4 +59,31 @@ export const fields = {
       { value: 'extended', label: 'Extended (9ths, 11ths, 13ths)' },
     ],
   },
+  autoHelperMode: {
+    choices: [
+      { value: 'simple', label: 'Simple auto helper' },
+      { value: 'advanced', label: 'Advanced auto helper' },
+    ],
+  },
+  autoScaleScope: {
+    choices: [
+      { value: 'common', label: 'Common scales' },
+      { value: 'all', label: 'All Tonal scales' },
+    ],
+  },
+  autoEvidence: {
+    choices: [
+      { value: 'balanced', label: 'Balanced notes + chord roots' },
+      { value: 'notes', label: 'Note content' },
+      { value: 'chords', label: 'Chord roots' },
+    ],
+  },
+  autoMinimumConfidence: {
+    choices: [
+      { value: '0.25', label: '25% — permissive' },
+      { value: '0.45', label: '45% — balanced' },
+      { value: '0.65', label: '65% — confident' },
+      { value: '0.8', label: '80% — strict' },
+    ],
+  },
 };

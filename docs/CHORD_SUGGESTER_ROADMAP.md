@@ -119,6 +119,7 @@ Layout (reusing existing components — `PianoKeyboard`, `ChordName`, `ChordName
 
 ### Phase 1 — Engine (pure logic, TDD)
 - `src/renderer/helpers/suggestions.ts` — mode tables, diatonic-field builder, degree locator, weighted ranker, style flavoring.
+- `src/renderer/helpers/autoContext.ts` — deterministic record-stop tonic/scale inference with simple common-mode and advanced full-catalog strategies.
 - `src/renderer/helpers/__tests__/suggestions.test.ts` — exhaustive tests across the complete Tonal scale catalog, all theoretical tonic spellings, every generated voicing size, known progressions, style switches, and all Tonal chord symbols.
 - **Exit criterion:** `npm test` green with meaningful coverage of the engine; zero React/MIDI imports in the helper.
 

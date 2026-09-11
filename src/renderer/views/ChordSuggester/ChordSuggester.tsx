@@ -1,10 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classnames from 'classnames/bind';
 import { Chord as TonalChord, Note } from 'tonal';
 
 import { useSettings } from 'renderer/contexts/Settings';
 import useNotes from 'renderer/hooks/useNotes';
-import { buildDiatonicField, getChordSuggestions, type ChordSuggestion } from 'renderer/helpers';
+import {
+  buildDiatonicField,
+  getChordSuggestions,
+  inferAutoContext,
+  type AutoContext,
+  type ChordSuggestion,
+  type RecordedChord,
+} from 'renderer/helpers';
 import { ChordName, ChordNameLink, Notation, PianoKeyboard } from 'renderer/components';
 import { defaultKeyboardSettings } from 'main/store/defaults';
 
@@ -14,7 +21,7 @@ import styles from './ChordSuggester.module.scss';
 const cx = classnames.bind(styles);
 
 const ChordSuggester: React.FC = () => {
-  const { settings } = useSettings();
+  const { settings, updateSettings } = useSettings();
   const config = settings.chordSuggester;
   const { midiNotes, sustainedMidiNotes, playedMidiNotes, chords, params } = useNotes({
     key: 'C',
@@ -28,11 +35,66 @@ const ChordSuggester: React.FC = () => {
   const [history, setHistory] = useState<string[]>([]);
   const [activeSuggestion, setActiveSuggestion] = useState<ChordSuggestion | null>(null);
   const [auditionMessage, setAuditionMessage] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordedChords, setRecordedChords] = useState<RecordedChord[]>([]);
+  const [autoContext, setAutoContext] = useState<AutoContext | null>(null);
+  const [autoStatus, setAutoStatus] = useState<string | null>(null);
+  const appliedContext = useRef<string | null>(null);
   const currentSymbol = chords[0]?.symbol;
   const field = useMemo(
     () => buildDiatonicField(config.tonic, config.mode),
     [config.tonic, config.mode]
   );
+  const autoOptions = useMemo(
+    () => ({
+      mode: config.autoHelperMode,
+      scaleScope: config.autoScaleScope,
+      evidence: config.autoEvidence,
+      minimumConfidence: config.autoHelperMode === 'advanced' ? config.autoMinimumConfidence : 0.25,
+    }),
+    [
+      config.autoEvidence,
+      config.autoHelperMode,
+      config.autoMinimumConfidence,
+      config.autoScaleScope,
+    ]
+  );
+  const registerContext = useCallback(
+    async (context: AutoContext) => {
+      const contextKey = `${context.tonic}|${context.scaleType}`;
+      setAutoContext(context);
+      if (appliedContext.current === contextKey) {
+        setAutoStatus(
+          `Registered ${context.tonic} · ${context.scaleName} (${Math.round(
+            context.confidence * 100
+          )}% confidence).`
+        );
+        return;
+      }
+
+      appliedContext.current = contextKey;
+      try {
+        await updateSettings({
+          ...settings,
+          chordSuggester: {
+            ...settings.chordSuggester,
+            tonic: context.tonic,
+            mode: context.scaleType,
+          },
+        });
+        setAutoStatus(
+          `Registered ${context.tonic} · ${context.scaleName} (${Math.round(
+            context.confidence * 100
+          )}% confidence).`
+        );
+      } catch {
+        appliedContext.current = null;
+        setAutoStatus('Context found, but it could not be saved to settings.');
+      }
+    },
+    [settings, updateSettings]
+  );
+
   const historyRomans = useMemo(
     () =>
       history
@@ -85,6 +147,19 @@ const ChordSuggester: React.FC = () => {
   );
   const modeLabel = fields.mode.choices.find((choice) => choice.value === config.mode)?.label;
   const styleLabel = fields.style.choices.find((choice) => choice.value === config.style)?.label;
+  const recordButtonLabel = isRecording ? 'Stop & register' : 'Record key + scale';
+  let recordState = 'Simple mode: stop recording to register the most likely context.';
+  if (isRecording) recordState = `${recordedChords.length} chord changes captured`;
+  if (!isRecording && autoContext) {
+    recordState = `Registered ${autoContext.tonic} · ${autoContext.scaleName}`;
+  }
+  let recordDetail = 'The helper will set the tonic and scale automatically.';
+  if (isRecording) recordDetail = 'Play at least two different chords, then stop.';
+  if (!isRecording && autoContext) {
+    recordDetail = `${Math.round(autoContext.confidence * 100)}% confidence · ${
+      autoContext.chordCount
+    } chords analyzed`;
+  }
 
   useEffect(() => {
     if (!currentSymbol) return;
@@ -92,6 +167,67 @@ const ChordSuggester: React.FC = () => {
       previous[0] === currentSymbol ? previous : [currentSymbol, ...previous].slice(0, 5)
     );
   }, [currentSymbol]);
+
+  useEffect(() => {
+    const currentChord = chords[0];
+    if (!isRecording || !currentChord || !currentSymbol) return;
+
+    setRecordedChords((previous) => {
+      if (previous.at(-1)?.symbol === currentSymbol) return previous;
+      return [
+        ...previous,
+        {
+          symbol: currentSymbol,
+          root: currentChord.tonic || currentChord.root,
+          notes: [...currentChord.notes],
+        },
+      ].slice(-64);
+    });
+  }, [chords, currentSymbol, isRecording]);
+
+  useEffect(() => {
+    if (
+      !isRecording ||
+      config.autoHelperMode !== 'advanced' ||
+      !config.autoRegisterWhileRecording ||
+      recordedChords.length < 2
+    ) {
+      return;
+    }
+
+    const context = inferAutoContext(recordedChords, autoOptions);
+    if (context) registerContext(context);
+  }, [
+    autoOptions,
+    config.autoHelperMode,
+    config.autoRegisterWhileRecording,
+    isRecording,
+    recordedChords,
+    registerContext,
+  ]);
+
+  const handleRecordToggle = async () => {
+    if (isRecording) {
+      setIsRecording(false);
+      const context = inferAutoContext(recordedChords, autoOptions);
+      if (!context) {
+        setAutoStatus(
+          recordedChords.length === 0
+            ? 'No chords captured. Play a chord, then record again.'
+            : 'No context met the selected confidence threshold.'
+        );
+        return;
+      }
+      await registerContext(context);
+      return;
+    }
+
+    appliedContext.current = null;
+    setRecordedChords([]);
+    setAutoContext(null);
+    setAutoStatus('Recording started. Play changing chords, then stop to register the context.');
+    setIsRecording(true);
+  };
 
   const handleSuggestionClick = (suggestion: ChordSuggestion) => {
     setActiveSuggestion(suggestion);
@@ -131,6 +267,27 @@ const ChordSuggester: React.FC = () => {
           {field.map((candidate) => candidate.root).join(' · ')}
         </div>
       </header>
+
+      <section className={cx('recordBar')} aria-label="Automatic harmonic context recorder">
+        <button
+          className={cx('recordButton', { recordButtonActive: isRecording })}
+          type="button"
+          onClick={handleRecordToggle}
+          aria-pressed={isRecording}
+        >
+          <span className={cx('recordDot')} aria-hidden="true" />
+          {recordButtonLabel}
+        </button>
+        <div className={cx('recordInfo')}>
+          <strong>{recordState}</strong>
+          <span>{recordDetail}</span>
+          {autoStatus && (
+            <span className={cx('autoStatus')} role="status">
+              {autoStatus}
+            </span>
+          )}
+        </div>
+      </section>
 
       <main className={cx('workspace')}>
         <section className={cx('currentPanel')} aria-label="Current chord">

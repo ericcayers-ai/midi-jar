@@ -20,6 +20,71 @@
   border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.12));
 }
 
+.recordBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 0.65rem;
+  background: var(--card, rgba(255, 255, 255, 0.045));
+}
+
+.recordButton {
+  display: inline-flex;
+  min-width: 9.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--accent, #88a8ff);
+  border-radius: 0.45rem;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.recordButton:hover,
+.recordButton:focus-visible,
+.recordButtonActive {
+  background: color-mix(in srgb, var(--accent, #88a8ff) 14%, transparent);
+  outline: none;
+}
+
+.recordDot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--accent, #88a8ff);
+}
+
+.recordButtonActive .recordDot {
+  background: #e77979;
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #e77979 20%, transparent);
+}
+
+.recordInfo {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.2rem;
+  color: var(--muted-foreground, rgba(255, 255, 255, 0.58));
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.recordInfo strong {
+  color: var(--foreground, #f4f4f5);
+  font-size: 0.8rem;
+}
+
+.autoStatus {
+  color: var(--accent, #88a8ff);
+}
+
 .eyebrow,
 .sectionLabel {
   margin: 0;
@@ -320,6 +385,15 @@
 
   .suggestion {
     min-height: 7rem;
+  }
+
+  .recordBar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .recordButton {
+    width: 100%;
   }
 }
 

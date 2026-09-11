@@ -283,6 +283,8 @@ _NOTE: The Circle of Fifths is usually for displaying notes, not chords. But i f
 
 Chord Suggester listens to the same internal MIDI stream as the other modules. It displays the detected chord, its degree in a selected tonic and scale, and a deterministic ranked list of possible next chords.
 
+Use **Record key + scale** to capture a passage of changing chords. Press **Stop & register** to infer and register the most likely tonic, scale, and mode automatically. Simple auto helper mode searches the common modes; Advanced auto helper mode can search the complete Tonal scale catalog, choose note/root evidence, enforce a confidence threshold, and optionally update the context while recording.
+
 The scale selector is generated from Tonal's complete catalog (including pentatonic, hexatonic, heptatonic, symmetric, raga, bebop, and chromatic scales). The key selector includes all common and theoretical enharmonic tonic spellings. Scale fields are generated for every degree, not just seven-degree modes.
 
 The suggestions combine modal progression rules, tonal harmonic function, root motion, and a style preset:

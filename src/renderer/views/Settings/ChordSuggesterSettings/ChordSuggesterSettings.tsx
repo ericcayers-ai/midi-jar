@@ -44,7 +44,10 @@ const ChordSuggesterSettings: React.FC = () => {
             />
           </FormField>
 
-          <FormField label="Mode" hint="The scale and diatonic chord field used for ranking">
+          <FormField
+            label="Scale / mode"
+            hint="The scale and diatonic chord field used for ranking"
+          >
             <Select
               options={fields.mode.choices}
               onChange={(value: string) => updateSetting('chordSuggester.mode', value)}
@@ -82,6 +85,69 @@ const ChordSuggesterSettings: React.FC = () => {
               value={config.extensionComplexity}
             />
           </FormField>
+
+          <FormField
+            label="Auto helper mode"
+            hint="Record a passage, then register its most likely key and scale"
+          >
+            <Select
+              options={fields.autoHelperMode.choices}
+              onChange={(value: string) => updateSetting('chordSuggester.autoHelperMode', value)}
+              value={config.autoHelperMode}
+            />
+          </FormField>
+
+          <FormField
+            label="Advanced scale search"
+            hint="Simple searches common modes; advanced can search every Tonal scale"
+          >
+            <Select
+              options={fields.autoScaleScope.choices}
+              onChange={(value: string) => updateSetting('chordSuggester.autoScaleScope', value)}
+              value={config.autoScaleScope}
+              disabled={config.autoHelperMode !== 'advanced'}
+            />
+          </FormField>
+
+          <FormField
+            label="Advanced evidence"
+            hint="Choose whether notes, chord roots, or both drive registration"
+          >
+            <Select
+              options={fields.autoEvidence.choices}
+              onChange={(value: string) => updateSetting('chordSuggester.autoEvidence', value)}
+              value={config.autoEvidence}
+              disabled={config.autoHelperMode !== 'advanced'}
+            />
+          </FormField>
+
+          <FormField
+            label="Minimum confidence"
+            hint="Do not register a context below this confidence in advanced mode"
+          >
+            <Select
+              options={fields.autoMinimumConfidence.choices}
+              onChange={(value: string) =>
+                updateSetting('chordSuggester.autoMinimumConfidence', Number(value))
+              }
+              value={`${config.autoMinimumConfidence}`}
+              disabled={config.autoHelperMode !== 'advanced'}
+            />
+          </FormField>
+
+          <FormControlLabel
+            label="Register while recording"
+            hint="Advanced mode updates the detected key and scale as evidence arrives"
+            reverse
+          >
+            <Switch
+              checked={config.autoRegisterWhileRecording}
+              onChange={(value: boolean) =>
+                updateSetting('chordSuggester.autoRegisterWhileRecording', value)
+              }
+              disabled={config.autoHelperMode !== 'advanced'}
+            />
+          </FormControlLabel>
 
           <FormControlLabel
             label="Allow omitted chord tones"

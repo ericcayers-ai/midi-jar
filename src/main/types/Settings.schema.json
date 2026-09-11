@@ -269,6 +269,34 @@
                 "allowOmissions": {
                     "type": "boolean"
                 },
+                "autoEvidence": {
+                    "enum": [
+                        "balanced",
+                        "chords",
+                        "notes"
+                    ],
+                    "type": "string"
+                },
+                "autoHelperMode": {
+                    "enum": [
+                        "advanced",
+                        "simple"
+                    ],
+                    "type": "string"
+                },
+                "autoMinimumConfidence": {
+                    "type": "number"
+                },
+                "autoRegisterWhileRecording": {
+                    "type": "boolean"
+                },
+                "autoScaleScope": {
+                    "enum": [
+                        "all",
+                        "common"
+                    ],
+                    "type": "string"
+                },
                 "audition": {
                     "type": "boolean"
                 },
