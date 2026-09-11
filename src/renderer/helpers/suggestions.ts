@@ -1,5 +1,4 @@
-import { Chord as TonalChord } from 'tonal';
-import { Note, Scale } from 'tonal';
+import { Chord as TonalChord, Note, Scale } from 'tonal';
 
 export type SuggesterMode =
   | 'ionian'
@@ -404,20 +403,22 @@ export function getChordSuggestions(params: SuggestionParams): ChordSuggestion[]
         : getChord(symbol, baseSymbol(candidate.root, candidate.quality));
       const score = scoreCandidate(candidate, current, currentRoot, params);
       return {
-        ...candidate,
-        chord,
-        symbol: chord.symbol,
-        reason: suggestionReason(candidate, current, params),
-        confidence: Number(clamp(0.5 + score / 250, 0.05, 0.99).toFixed(2)),
-        _score: score,
-        _index: index,
+        suggestion: {
+          ...candidate,
+          chord,
+          symbol: chord.symbol,
+          reason: suggestionReason(candidate, current, params),
+          confidence: Number(clamp(0.5 + score / 250, 0.05, 0.99).toFixed(2)),
+        },
+        score,
+        candidateIndex: index,
       };
     })
-    .sort((a, b) => b._score - a._score || a._index - b._index)
+    .sort((a, b) => b.score - a.score || a.candidateIndex - b.candidateIndex)
     .filter(
       (suggestion, index, all) =>
-        all.findIndex((item) => item.symbol === suggestion.symbol) === index
+        all.findIndex((item) => item.suggestion.symbol === suggestion.suggestion.symbol) === index
     )
     .slice(0, count)
-    .map(({ _score, _index, ...suggestion }) => suggestion);
+    .map(({ suggestion }) => suggestion);
 }

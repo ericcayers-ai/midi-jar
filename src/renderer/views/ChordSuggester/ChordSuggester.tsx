@@ -16,7 +16,7 @@ const cx = classnames.bind(styles);
 const ChordSuggester: React.FC = () => {
   const { settings } = useSettings();
   const config = settings.chordSuggester;
-  const { midiNotes, pitchClasses, sustainedMidiNotes, playedMidiNotes, chords, params } = useNotes(
+  const { midiNotes, sustainedMidiNotes, playedMidiNotes, chords, params } = useNotes(
     {
       key: 'C',
       accidentals: settings.notation.accidentals,
@@ -110,7 +110,7 @@ const ChordSuggester: React.FC = () => {
       return;
     }
     setAuditionMessage(`Sent ${suggestion.symbol} to ${config.auditionOutput}.`);
-    void window.midi.audition(
+    window.midi.audition(
       config.auditionOutput,
       suggestion.chord.notes.flatMap((note) => {
         const midi = Note.midi(`${note}4`);
