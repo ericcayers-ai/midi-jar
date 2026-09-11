@@ -91,7 +91,7 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "la-jarre-a-son",
+      "owner": "ericcayers-ai",
       "repo": "midi-jar"
     }
   },
