@@ -11,7 +11,7 @@ import {
 
 import { useMidiRouting } from 'renderer/contexts/MidiRouting';
 import { useSettings } from 'renderer/contexts/Settings';
-import { InputNote, Icon, ScrollContainer } from 'renderer/components';
+import { Icon, ScrollContainer } from 'renderer/components';
 
 import { fields } from './constants';
 
@@ -33,11 +33,14 @@ const ChordSuggesterSettings: React.FC = () => {
     <>
       <ScrollContainer pad="md">
         <Container size="md">
-          <FormField label="Tonic" hint="The root of the key used for suggestions">
-            <InputNote
-              value={config.tonic}
+          <FormField
+            label="Key / tonic"
+            hint="All common and theoretical enharmonic key spellings are available"
+          >
+            <Select
+              options={fields.tonic.choices}
               onChange={(value: string) => updateSetting('chordSuggester.tonic', value)}
-              type="text"
+              value={config.tonic}
             />
           </FormField>
 

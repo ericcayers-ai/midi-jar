@@ -281,7 +281,9 @@ _NOTE: The Circle of Fifths is usually for displaying notes, not chords. But i f
 
 ## Chord Suggester
 
-Chord Suggester listens to the same internal MIDI stream as the other modules. It displays the detected chord, its degree in a selected tonic and mode, and a deterministic ranked list of possible next chords.
+Chord Suggester listens to the same internal MIDI stream as the other modules. It displays the detected chord, its degree in a selected tonic and scale, and a deterministic ranked list of possible next chords.
+
+The scale selector is generated from Tonal's complete catalog (including pentatonic, hexatonic, heptatonic, symmetric, raga, bebop, and chromatic scales). The key selector includes all common and theoretical enharmonic tonic spellings. Scale fields are generated for every degree, not just seven-degree modes.
 
 The suggestions combine modal progression rules, tonal harmonic function, root motion, and a style preset:
 
@@ -290,7 +292,7 @@ The suggestions combine modal progression rules, tonal harmonic function, root m
 - `classical`: functional predominant and dominant movement with restrained extensions
 - `modal`: highlights characteristic degrees without forcing every progression toward a major-key cadence
 
-Open `/suggestions` from the home page. The Settings drawer controls tonic, mode, style, suggestion count, extension complexity, sustain and release detection, the keyboard/notation/history display, and audition. Hover a suggestion to ghost-highlight its notes on the keyboard. To audition a suggestion, enable audition and choose one physical MIDI output; the app sends a short note-on/note-off phrase only to that output.
+Open `/suggestions` from the home page. The Settings drawer controls tonic, scale type, style, up to twelve suggestions, extension complexity (triad through thirteenth), sustain and release detection, the keyboard/notation/history display, and audition. Every suggestion exposes its exact interval set; named Tonal chords use their standard symbol, while uncommon scale voicings remain available as custom note sets. Hover a suggestion to ghost-highlight its notes on the keyboard. To audition a suggestion, enable audition and choose one physical MIDI output; the app sends a short note-on/note-off phrase only to that output.
 
 The module is also available from the HTTP/WebSocket overlay at `/suggestions` for OBS Browser Source use.
 

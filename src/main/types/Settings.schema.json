@@ -299,17 +299,6 @@
                     "type": "string"
                 },
                 "mode": {
-                    "enum": [
-                        "aeolian",
-                        "aeolian_h",
-                        "aeolian_m",
-                        "dorian",
-                        "ionian",
-                        "locrian",
-                        "lydian",
-                        "mixolydian",
-                        "phrygian"
-                    ],
                     "type": "string"
                 },
                 "showHistory": {
@@ -325,13 +314,6 @@
                     "type": "string"
                 },
                 "suggestionCount": {
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                    ],
                     "type": "number"
                 },
                 "tonic": {

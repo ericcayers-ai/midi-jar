@@ -53,18 +53,9 @@ export type ChordQuizSettings = {
 
 export type ChordSuggesterSettings = {
   tonic: string;
-  mode:
-    | 'ionian'
-    | 'dorian'
-    | 'phrygian'
-    | 'lydian'
-    | 'mixolydian'
-    | 'aeolian'
-    | 'aeolian_h'
-    | 'aeolian_m'
-    | 'locrian';
+  mode: string;
   style: 'pop' | 'jazz' | 'classical' | 'modal';
-  suggestionCount: 1 | 2 | 3 | 4 | 5;
+  suggestionCount: number;
   extensionComplexity: 'triads' | 'sevenths' | 'extended';
   allowOmissions: boolean;
   useSustain: boolean;

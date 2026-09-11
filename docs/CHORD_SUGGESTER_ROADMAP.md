@@ -9,7 +9,7 @@
 
 `splineguy/midi-chord-suggester` is a ~600-line Python script (`mido` + `pygame.midi`) that:
 - reads live MIDI, names chords (triads → 7ths → extensions like m9/maj7♯11/7♭9),
-- maps the played root to a **scale degree** in a chosen tonic + mode (9 modes incl. harmonic/melodic minor),
+- maps the played root to a **scale degree** in any Tonal catalog scale and chosen tonic,
 - suggests 2–3 next chords via hard-coded **modal cadence + progression-rule tables**, with pop / jazz / classical "style" flavoring and jazz secondary-dominant spice.
 
 MIDI Jar already solves the hard 80% of that problem *better* than the reference script:
@@ -119,7 +119,7 @@ Layout (reusing existing components — `PianoKeyboard`, `ChordName`, `ChordName
 
 ### Phase 1 — Engine (pure logic, TDD)
 - `src/renderer/helpers/suggestions.ts` — mode tables, diatonic-field builder, degree locator, weighted ranker, style flavoring.
-- `src/renderer/helpers/__tests__/suggestions.test.ts` — table-driven tests: known progressions (C: G7→C is top suggestion for V; Am dorian ♭VII↔IV), each of the 9 modes produces the right diatonic qualities, style switches change extension density, enharmonic spelling matches key signature.
+- `src/renderer/helpers/__tests__/suggestions.test.ts` — exhaustive tests across the complete Tonal scale catalog, all theoretical tonic spellings, every generated voicing size, known progressions, style switches, and all Tonal chord symbols.
 - **Exit criterion:** `npm test` green with meaningful coverage of the engine; zero React/MIDI imports in the helper.
 
 ### Phase 2 — Settings plumbing
@@ -164,7 +164,7 @@ Layout (reusing existing components — `PianoKeyboard`, `ChordName`, `ChordName
 
 Implemented on `feature/chord-suggester`:
 
-- Pure deterministic suggestion engine with unit tests for all nine modes, V→I ranking, modal characteristic chords, key spelling, empty input, and repeatability.
+- Pure deterministic suggestion engine with exhaustive scale/key/voicing/chord coverage, V→I ranking, modal characteristic chords, key spelling, empty input, custom interval preservation, and repeatability.
 - Version 1.8.0 settings defaults, generated schema, migration, and previous-chord context.
 - Desktop and overlay routes, home tiles, settings drawer, responsive live view, keyboard ghost highlighting, and selected-output audition bridge.
 - README and changelog documentation.

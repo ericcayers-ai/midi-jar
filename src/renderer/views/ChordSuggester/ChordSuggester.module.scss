@@ -197,7 +197,10 @@
   color: inherit;
   cursor: pointer;
   text-align: left;
-  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
 }
 
 .suggestion:hover,
@@ -220,6 +223,15 @@
   font-size: clamp(1.25rem, 2.4vw, 2.1rem);
   font-weight: 700;
   letter-spacing: -0.05em;
+  overflow-wrap: anywhere;
+}
+
+.suggestionIntervals {
+  max-width: 100%;
+  color: var(--muted-foreground, rgba(255, 255, 255, 0.5));
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.65rem;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 

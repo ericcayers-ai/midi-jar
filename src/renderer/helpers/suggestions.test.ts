@@ -1,4 +1,4 @@
-import { Chord } from 'tonal';
+import { Chord, ChordType, Scale } from 'tonal';
 
 import {
   buildDiatonicField,
@@ -40,7 +40,7 @@ describe('chord suggestion engine', () => {
     });
 
     expect(suggestions[0].roman).toBe('I');
-    expect(suggestions[0].symbol).toBe('C');
+    expect(suggestions[0].symbol).toBe('Cmaj7');
     expect(suggestions[0].reason).toContain('resolves');
   });
 
@@ -96,5 +96,98 @@ describe('chord suggestion engine', () => {
     expect(
       suggestions.some(({ roman, reason }) => roman === '♭VII' && reason.includes('modal'))
     ).toBe(true);
+  });
+
+  it('builds every Tonal scale type for every theoretical tonic spelling', () => {
+    const tonics = ['C', 'D', 'E', 'F', 'G', 'A', 'B'].flatMap((letter) =>
+      ['bb', 'b', '', '#', '##'].map((accidental) => `${letter}${accidental}`)
+    );
+    const scaleTypes = [...Scale.names(), 'ionian', 'aeolian_h', 'aeolian_m'];
+
+    scaleTypes.forEach((scaleType) => {
+      const tonalName =
+        scaleType === 'ionian'
+          ? 'major'
+          : scaleType === 'aeolian_h'
+          ? 'harmonic minor'
+          : scaleType === 'aeolian_m'
+          ? 'melodic minor'
+          : scaleType;
+      tonics.forEach((tonic) => {
+        const expectedScale = Scale.get(`${tonic} ${tonalName}`);
+        const field = buildDiatonicField(tonic, scaleType);
+        expect(field).toHaveLength(expectedScale.notes.length);
+        expect(field.length).toBeGreaterThan(0);
+        field.forEach(({ root, chord, degreeIndex, scaleNotes }) => {
+          expect(root).toBe(scaleNotes[degreeIndex]);
+          expect(chord.notes.length).toBe(Math.min(3, field.length));
+          expect(chord.intervals).toHaveLength(chord.notes.length);
+        });
+      });
+    });
+  });
+
+  it('supports triad, seventh, and extended voicings for every scale type', () => {
+    Scale.names().forEach((mode) => {
+      ['triads', 'sevenths', 'extended'].forEach((extensionComplexity) => {
+        const field = buildDiatonicField('C', mode);
+        const suggestions = getChordSuggestions({
+          tonic: 'C',
+          mode,
+          style: 'modal',
+          extensionComplexity: extensionComplexity as 'triads' | 'sevenths' | 'extended',
+          currentChord: field[0].chord,
+          count: field.length,
+        });
+        expect(suggestions).toHaveLength(field.length);
+        suggestions.forEach(({ chord }) => {
+          expect(chord.notes.length).toBe(
+            Math.min(
+              extensionComplexity === 'triads' ? 3 : extensionComplexity === 'sevenths' ? 4 : 7,
+              field.length
+            )
+          );
+          expect(chord.intervals).toHaveLength(chord.notes.length);
+        });
+      });
+    });
+  });
+
+  it('handles every Tonal chord symbol as the current chord', () => {
+    const chords = ChordType.symbols()
+      .map((symbol) => Chord.get(`C${symbol}`))
+      .filter((chord) => !chord.empty);
+
+    expect(chords.length).toBe(ChordType.symbols().length);
+    chords.forEach((currentChord) => {
+      const suggestions = getChordSuggestions({
+        tonic: 'C',
+        mode: 'major',
+        style: 'jazz',
+        extensionComplexity: 'extended',
+        currentChord: currentChord as DetectedChord,
+        count: 12,
+      });
+      expect(suggestions.length).toBeGreaterThan(0);
+      suggestions.forEach(({ chord }) => {
+        expect(chord.notes.length).toBeGreaterThan(0);
+        expect(chord.intervals).toHaveLength(chord.notes.length);
+      });
+    });
+  });
+
+  it('returns all twelve chromatic degree suggestions with exact custom intervals', () => {
+    const suggestions = getChordSuggestions({
+      tonic: 'C',
+      mode: 'chromatic',
+      style: 'modal',
+      extensionComplexity: 'extended',
+      currentChord: Chord.get('C') as DetectedChord,
+      count: 12,
+    });
+
+    expect(suggestions).toHaveLength(12);
+    expect(suggestions.every(({ chord }) => chord.notes.length === 7)).toBe(true);
+    expect(suggestions.every(({ chord }) => chord.intervals.length === 7)).toBe(true);
   });
 });

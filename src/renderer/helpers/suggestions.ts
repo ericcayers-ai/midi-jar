@@ -1,15 +1,6 @@
-import { Chord as TonalChord, Note, Scale } from 'tonal';
+import { Chord as TonalChord, Interval, Note, Pcset, Scale } from 'tonal';
 
-export type SuggesterMode =
-  | 'ionian'
-  | 'dorian'
-  | 'phrygian'
-  | 'lydian'
-  | 'mixolydian'
-  | 'aeolian'
-  | 'aeolian_h'
-  | 'aeolian_m'
-  | 'locrian';
+export type SuggesterMode = string;
 
 export type SuggesterStyle = 'pop' | 'jazz' | 'classical' | 'modal';
 export type ExtensionComplexity = 'triads' | 'sevenths' | 'extended';
@@ -28,9 +19,12 @@ export type DetectedChord = {
 export type DiatonicChord = {
   root: string;
   roman: string;
-  quality: 'major' | 'minor' | 'diminished' | 'augmented';
+  quality: string;
   harmonicFunction: HarmonicFunction;
   chord: ReturnType<typeof TonalChord.get>;
+  degreeIndex: number;
+  scaleNotes: string[];
+  scaleName: string;
 };
 
 export type ChordSuggestion = DiatonicChord & {
@@ -51,7 +45,7 @@ export type SuggestionParams = {
   recentRomans?: string[];
 };
 
-const MODE_SCALE_NAMES: Record<SuggesterMode, string> = {
+const MODE_SCALE_NAMES: Record<string, string> = {
   ionian: 'major',
   dorian: 'dorian',
   phrygian: 'phrygian',
@@ -63,7 +57,38 @@ const MODE_SCALE_NAMES: Record<SuggesterMode, string> = {
   locrian: 'locrian',
 };
 
-const MODE_ROMANS: Record<SuggesterMode, string[]> = {
+const SCALE_DEGREE_LABELS = [
+  'I',
+  'II',
+  'III',
+  'IV',
+  'V',
+  'VI',
+  'VII',
+  'VIII',
+  'IX',
+  'X',
+  'XI',
+  'XII',
+];
+
+const COMPLEXITY_NOTE_COUNTS: Record<ExtensionComplexity, number> = {
+  triads: 3,
+  sevenths: 4,
+  extended: 7,
+};
+
+function scaleNameForMode(mode: SuggesterMode) {
+  return MODE_SCALE_NAMES[mode] || mode;
+}
+
+function legacyModeForScale(mode: SuggesterMode) {
+  if (mode === 'major') return 'ionian';
+  if (mode === 'minor') return 'aeolian';
+  return mode;
+}
+
+const MODE_ROMANS: Record<string, string[]> = {
   ionian: ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'],
   dorian: ['i', 'ii', '♭III', 'IV', 'v', 'vi°', '♭VII'],
   phrygian: ['i', '♭II', '♭III', 'iv', 'v°', '♭VI', '♭VII'],
@@ -75,10 +100,7 @@ const MODE_ROMANS: Record<SuggesterMode, string[]> = {
   locrian: ['i°', '♭II', '♭III', 'iv', '♭V', '♭VI', '♭VII'],
 };
 
-const MODE_QUALITIES: Record<
-  SuggesterMode,
-  Array<'major' | 'minor' | 'diminished' | 'augmented'>
-> = {
+const MODE_QUALITIES: Record<string, string[]> = {
   ionian: ['major', 'minor', 'minor', 'major', 'major', 'minor', 'diminished'],
   dorian: ['minor', 'minor', 'major', 'major', 'minor', 'diminished', 'major'],
   phrygian: ['minor', 'major', 'major', 'minor', 'diminished', 'major', 'minor'],
@@ -90,7 +112,7 @@ const MODE_QUALITIES: Record<
   locrian: ['diminished', 'major', 'minor', 'minor', 'major', 'major', 'minor'],
 };
 
-const MODE_FUNCTIONS: Record<SuggesterMode, HarmonicFunction[]> = {
+const MODE_FUNCTIONS: Record<string, HarmonicFunction[]> = {
   ionian: ['T', 'SD', 'T', 'SD', 'D', 'T', 'D'],
   dorian: ['T', 'SD', 'T', 'SD', 'T', 'D', 'SD'],
   phrygian: ['T', 'SD', 'T', 'T', 'D', 'SD', 'SD'],
@@ -102,7 +124,7 @@ const MODE_FUNCTIONS: Record<SuggesterMode, HarmonicFunction[]> = {
   locrian: ['D', 'SD', 'T', 'T', 'D', 'SD', 'SD'],
 };
 
-const PROGRESSION_RULES: Record<SuggesterMode, Record<string, string[]>> = {
+const PROGRESSION_RULES: Record<string, Record<string, string[]>> = {
   ionian: {
     I: ['IV', 'V', 'vi'],
     ii: ['V'],
@@ -183,7 +205,7 @@ const PROGRESSION_RULES: Record<SuggesterMode, Record<string, string[]>> = {
   },
 };
 
-const MODAL_CHARACTERISTICS: Record<SuggesterMode, string[]> = {
+const MODAL_CHARACTERISTICS: Record<string, string[]> = {
   ionian: ['IV', 'V'],
   dorian: ['IV', '♭VII'],
   phrygian: ['♭II', '♭VI'],
@@ -206,40 +228,58 @@ function noteInKeySignature(note: string, keySignature?: KeySignatureLike) {
   return spelling ? Note.enharmonic(note, spelling) : note;
 }
 
-function triadSuffix(quality: DiatonicChord['quality']) {
-  if (quality === 'minor') return 'm';
-  if (quality === 'diminished') return 'dim';
-  if (quality === 'augmented') return 'aug';
-  return '';
+function normalizeQuality(quality: string) {
+  return quality.toLowerCase();
 }
 
-function baseSymbol(root: string, quality: DiatonicChord['quality']) {
-  return `${root}${triadSuffix(quality)}`;
+function degreeLabel(mode: SuggesterMode, index: number) {
+  const legacyMode = legacyModeForScale(mode);
+  return MODE_ROMANS[legacyMode]?.[index] || SCALE_DEGREE_LABELS[index] || `${index + 1}`;
 }
 
-function getChord(symbol: string, fallback: string) {
-  const chord = TonalChord.get(symbol);
-  return chord.empty ? TonalChord.get(fallback) : chord;
+function harmonicFunctionForDegree(root: string, tonic: string, index: number): HarmonicFunction {
+  if (index === 0) return 'T';
+  if (rootDistance(tonic, root) === 7) return 'D';
+  return index % 2 === 0 ? 'T' : 'SD';
 }
 
-function styledSymbol(
-  root: string,
-  quality: DiatonicChord['quality'],
-  harmonicFunction: HarmonicFunction,
-  style: SuggesterStyle,
-  extensionComplexity: ExtensionComplexity
-) {
-  const base = baseSymbol(root, quality);
-  if (extensionComplexity === 'triads') return base;
-  if (style === 'classical') return harmonicFunction === 'D' ? `${root}7` : base;
-  if (style === 'modal') return base;
+function scaleStack(notes: string[], degreeIndex: number, requestedSize: number) {
+  const size = Math.min(requestedSize, notes.length);
+  return Array.from(
+    { length: size },
+    (_, index) => notes[(degreeIndex + index * 2) % notes.length]
+  );
+}
 
-  if (quality === 'diminished') return extensionComplexity === 'extended' ? `${root}m7b5` : base;
-  if (quality === 'augmented') return extensionComplexity === 'extended' ? `${root}aug7` : base;
-  if (harmonicFunction === 'D')
-    return extensionComplexity === 'extended' ? `${root}13` : `${root}7`;
-  if (quality === 'minor') return extensionComplexity === 'extended' ? `${root}m9` : `${root}m7`;
-  return extensionComplexity === 'extended' ? `${root}maj9` : `${root}maj7`;
+function chordFromNotes(root: string, notes: string[], degreeIndex: number, scaleName: string) {
+  const detected = TonalChord.detect(notes)
+    .map((symbol) => TonalChord.get(symbol))
+    .find(
+      (chord) =>
+        !chord.empty &&
+        chord.tonic !== null &&
+        Note.chroma(chord.tonic) === Note.chroma(root) &&
+        chord.notes.length === notes.length &&
+        Pcset.isEqual(chord.notes, notes)
+    );
+
+  if (detected) return detected;
+
+  const pcset = Pcset.get(notes);
+  const customType = `[${notes.join(',')}]`;
+  return {
+    ...pcset,
+    name: `${root} custom degree ${degreeIndex + 1} (${scaleName})`,
+    quality: 'Unknown' as const,
+    aliases: [customType, customType, customType, customType],
+    tonic: root,
+    type: 'custom',
+    root,
+    rootDegree: degreeIndex + 1,
+    symbol: `${root}${customType}`,
+    notes,
+    intervals: notes.map((note) => Interval.distance(root, note)),
+  } as ReturnType<typeof TonalChord.get>;
 }
 
 function chordRoot(chord: DetectedChord) {
@@ -258,21 +298,24 @@ export function buildDiatonicField(
   mode: SuggesterMode,
   keySignature?: KeySignatureLike
 ): DiatonicChord[] {
-  const scale = Scale.get(`${tonic} ${MODE_SCALE_NAMES[mode]}`);
+  const scaleName = scaleNameForMode(mode);
+  const scale = Scale.get(`${tonic} ${scaleName}`);
   const roots = scale.notes.map((note) => noteInKeySignature(note, keySignature));
-  const romans = MODE_ROMANS[mode];
-  const qualities = MODE_QUALITIES[mode];
-  const functions = MODE_FUNCTIONS[mode];
+  const legacyMode = legacyModeForScale(mode);
+  const qualities = MODE_QUALITIES[legacyMode] || [];
+  const functions = MODE_FUNCTIONS[legacyMode] || [];
 
   return roots.map((root, index) => {
-    const quality = qualities[index];
-    const symbol = baseSymbol(root, quality);
+    const chord = chordFromNotes(root, scaleStack(roots, index, 3), index, scaleName);
     return {
       root,
-      roman: romans[index],
-      quality,
-      harmonicFunction: functions[index],
-      chord: getChord(symbol, root),
+      roman: degreeLabel(mode, index),
+      quality: normalizeQuality(chord.quality) || qualities[index] || 'unknown',
+      harmonicFunction: functions[index] || harmonicFunctionForDegree(root, tonic, index),
+      chord,
+      degreeIndex: index,
+      scaleNotes: roots,
+      scaleName,
     };
   });
 }
@@ -285,7 +328,9 @@ function scoreCandidate(
 ) {
   const currentRoman = current?.roman;
   let score = 0;
-  const rules = currentRoman ? PROGRESSION_RULES[params.mode][currentRoman] || [] : [];
+  const rules = currentRoman
+    ? PROGRESSION_RULES[legacyModeForScale(params.mode)]?.[currentRoman] || []
+    : [];
   const ruleIndex = rules.indexOf(candidate.roman);
 
   if (ruleIndex >= 0) score += 120 - ruleIndex * 18;
@@ -304,7 +349,10 @@ function scoreCandidate(
   if (distance === 1 || distance === 2 || distance === 10 || distance === 11) score += 8;
   if (distance === 6) score -= 5;
 
-  if (params.style === 'modal' && MODAL_CHARACTERISTICS[params.mode].includes(candidate.roman)) {
+  if (
+    params.style === 'modal' &&
+    MODAL_CHARACTERISTICS[legacyModeForScale(params.mode)]?.includes(candidate.roman)
+  ) {
     score += 28;
   }
   if (params.style === 'pop') {
@@ -337,16 +385,22 @@ function suggestionReason(
     return `Secondary dominant prepares ${candidate.targetRoman}`;
   }
   if (current) {
-    const rules = PROGRESSION_RULES[params.mode][current.roman] || [];
+    const rules = PROGRESSION_RULES[legacyModeForScale(params.mode)]?.[current.roman] || [];
     if (current.harmonicFunction === 'D' && candidate.harmonicFunction === 'T') {
       return `Dominant resolves to ${candidate.roman}`;
     }
-    if (params.style === 'modal' && MODAL_CHARACTERISTICS[params.mode].includes(candidate.roman)) {
+    if (
+      params.style === 'modal' &&
+      MODAL_CHARACTERISTICS[legacyModeForScale(params.mode)]?.includes(candidate.roman)
+    ) {
       return `${current.roman} → ${candidate.roman} movement; modal characteristic`;
     }
     if (rules.includes(candidate.roman)) return `${current.roman} → ${candidate.roman} movement`;
   }
-  if (params.style === 'modal' && MODAL_CHARACTERISTICS[params.mode].includes(candidate.roman)) {
+  if (
+    params.style === 'modal' &&
+    MODAL_CHARACTERISTICS[legacyModeForScale(params.mode)]?.includes(candidate.roman)
+  ) {
     return `${candidate.roman} is characteristic of ${params.mode.replace('_', ' ')}`;
   }
   if (candidate.harmonicFunction === 'D') return 'Dominant creates forward motion';
@@ -362,7 +416,6 @@ export function getChordSuggestions(params: SuggestionParams): ChordSuggestion[]
   const current = field.find(
     (candidate) => Note.chroma(candidate.root) === Note.chroma(currentRoot)
   );
-  const count = clamp(params.count ?? 3, 1, 7);
   const candidates: Array<DiatonicChord & { targetRoman?: string; applied?: boolean }> = field.map(
     (candidate) => ({ ...candidate })
   );
@@ -380,27 +433,31 @@ export function getChordSuggestions(params: SuggestionParams): ChordSuggestion[]
         roman: `V/${target.roman}`,
         quality: 'major',
         harmonicFunction: 'D',
-        chord: getChord(symbol, `${dominantRoot}`),
+        chord: TonalChord.get(symbol),
+        degreeIndex: -1,
+        scaleNotes: [],
+        scaleName: scaleNameForMode(params.mode),
         targetRoman: target.roman,
         applied: true,
       });
     });
   }
 
+  const count = clamp(params.count ?? 3, 1, candidates.length);
   return candidates
     .map((candidate, index) => {
-      const symbol = candidate.applied
-        ? candidate.chord.symbol
-        : styledSymbol(
-            candidate.root,
-            candidate.quality,
-            candidate.harmonicFunction,
-            params.style,
-            params.extensionComplexity
-          );
       const chord = candidate.applied
         ? candidate.chord
-        : getChord(symbol, baseSymbol(candidate.root, candidate.quality));
+        : chordFromNotes(
+            candidate.root,
+            scaleStack(
+              candidate.scaleNotes,
+              candidate.degreeIndex,
+              COMPLEXITY_NOTE_COUNTS[params.extensionComplexity]
+            ),
+            candidate.degreeIndex,
+            candidate.scaleName
+          );
       const score = scoreCandidate(candidate, current, currentRoot, params);
       return {
         suggestion: {

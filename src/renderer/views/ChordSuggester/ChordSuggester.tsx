@@ -193,6 +193,9 @@ const ChordSuggester: React.FC = () => {
                 <span className={cx('suggestionChord')}>
                   <ChordName chord={suggestion.chord} notation="preferred" />
                 </span>
+                <span className={cx('suggestionIntervals')}>
+                  {suggestion.chord.intervals.join(' · ')}
+                </span>
                 <span className={cx('suggestionReason')}>
                   {config.displayReason ? suggestion.reason : 'Play this next'}
                 </span>
