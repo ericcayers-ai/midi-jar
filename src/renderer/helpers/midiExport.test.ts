@@ -8,7 +8,7 @@ describe('encodeMidiFile', () => {
     ];
 
     const bytes = encodeMidiFile(chords, 480);
-    const text = new TextDecoder().decode(bytes.slice(0, 8));
+    const text = String.fromCharCode(...bytes.slice(0, 8));
 
     expect(text).toBe('MThd\0\0\0\x06');
     expect(new DataView(bytes.buffer).getUint16(8)).toBe(0);
