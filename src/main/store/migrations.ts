@@ -382,11 +382,12 @@ const migrations: Migrations<StoreType> = {
     store.set('version', '1.10.0');
 
     const settings = store.get('settings') as unknown as v1_9_0_Settings;
+    const bindAddress = (settings.server as unknown as { bindAddress?: string }).bindAddress;
     const newSettings: v1_10_0_Settings = {
       ...settings,
       server: {
         ...settings.server,
-        bindAddress: settings.server.bindAddress || '127.0.0.1',
+        bindAddress: bindAddress || '127.0.0.1',
       },
     };
 
