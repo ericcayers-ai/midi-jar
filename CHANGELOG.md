@@ -1,3 +1,13 @@
+# 1.9.0 (Unreleased)
+
+## Features
+- **Chord Suggester**: record/stop context helper that registers the detected tonic, scale, and mode automatically
+- **Chord Suggester**: simple common-scale helper plus advanced full-catalog inference with configurable evidence and confidence
+- **Chord Suggester**: live chord detection with deterministic next-chord suggestions across Tonal's complete scale catalog, all tonic spellings, and four style presets
+- **Chord Suggester**: generates every scale degree and triad/seventh/extended voicing, preserving exact intervals for unnamed chord sets
+- **Chord Suggester**: optional piano ghost highlighting, recent-chord trail, and key/mode-aware harmonic explanations
+- **MIDI**: audition selected suggestions through a chosen physical output
+
 # 1.7.0 (2024-01-05)
 
 ## Features

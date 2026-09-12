@@ -15,6 +15,7 @@ import ChordDictionarySettings from './ChordDictionarySettings';
 import NotationSettings from './NotationSettings';
 import CircleOfFifthsSettings from './CircleOfFifthsSettings';
 import ChordQuizSettings from './ChordQuizSettings';
+import ChordSuggesterSettings from './ChordSuggesterSettings';
 import About from './About';
 import Licenses from './Licenses';
 
@@ -37,6 +38,7 @@ export const settingsRoutes = () => (
     />
     <Route path="circle-of-fifths" element={<CircleOfFifthsSettings />} />
     <Route path="quiz" element={<ChordQuizSettings />} />
+    <Route path="suggester" element={<ChordSuggesterSettings />} />
     <Route path="chord-dictionary" element={<ChordDictionarySettings />} />
     <Route path="chords" element={<ChordDisplaySettings />}>
       <Route

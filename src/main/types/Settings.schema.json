@@ -264,6 +264,95 @@
             },
             "type": "object"
         },
+        "chordSuggester": {
+            "properties": {
+                "allowOmissions": {
+                    "type": "boolean"
+                },
+                "autoEvidence": {
+                    "enum": [
+                        "balanced",
+                        "chords",
+                        "notes"
+                    ],
+                    "type": "string"
+                },
+                "autoHelperMode": {
+                    "enum": [
+                        "advanced",
+                        "simple"
+                    ],
+                    "type": "string"
+                },
+                "autoMinimumConfidence": {
+                    "type": "number"
+                },
+                "autoRegisterWhileRecording": {
+                    "type": "boolean"
+                },
+                "autoScaleScope": {
+                    "enum": [
+                        "all",
+                        "common"
+                    ],
+                    "type": "string"
+                },
+                "audition": {
+                    "type": "boolean"
+                },
+                "auditionOutput": {
+                    "type": "string"
+                },
+                "considerPreviousChord": {
+                    "type": "boolean"
+                },
+                "detectOnRelease": {
+                    "type": "boolean"
+                },
+                "displayKeyboard": {
+                    "type": "boolean"
+                },
+                "displayNotation": {
+                    "type": "boolean"
+                },
+                "displayReason": {
+                    "type": "boolean"
+                },
+                "extensionComplexity": {
+                    "enum": [
+                        "extended",
+                        "sevenths",
+                        "triads"
+                    ],
+                    "type": "string"
+                },
+                "mode": {
+                    "type": "string"
+                },
+                "showHistory": {
+                    "type": "boolean"
+                },
+                "style": {
+                    "enum": [
+                        "classical",
+                        "jazz",
+                        "modal",
+                        "pop"
+                    ],
+                    "type": "string"
+                },
+                "suggestionCount": {
+                    "type": "number"
+                },
+                "tonic": {
+                    "type": "string"
+                },
+                "useSustain": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
         "circleOfFifths": {
             "properties": {
                 "displayAlterations": {

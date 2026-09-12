@@ -12,6 +12,7 @@ import MidiMessageManagerProvider from './contexts/MidiMessageManager';
 import Layout from './views/Layout';
 import Home from './views/Home';
 import ChordDisplay from './views/ChordDisplay';
+import ChordSuggester from './views/ChordSuggester';
 import ChordQuiz from './views/ChordQuiz';
 import CircleOfFifths from './views/CircleOfFifths';
 
@@ -24,6 +25,7 @@ import icon from '../../assets/icon.svg';
 import ChordDisplayNamespaceSettings from './views/Settings/ChordDisplaySettings/ChordDisplayModuleSettings';
 import ChordDictionary from './views/ChordDictionary';
 import ChordDictionaryDetail from './views/ChordDictionary/Detail';
+import ChordSuggesterSettings from './views/Settings/ChordSuggesterSettings';
 
 const router = createHashRouter(
   createRoutesFromElements(
@@ -69,7 +71,11 @@ const router = createHashRouter(
       </Route>
       <Route
         path="quiz"
-        handle={{ title: 'Chord Quiz', icon: <Icon name="quiz" />, hasSettings: true }}
+        handle={{
+          title: 'Chord Quiz',
+          icon: <Icon name="quiz" />,
+          hasSettings: true,
+        }}
         element={
           <MidiMessageManagerProvider namespace="chord-quiz" source="internal">
             <ChordQuiz />
@@ -78,6 +84,22 @@ const router = createHashRouter(
         }
       >
         <Route path="settings" element={<ChordQuizSettings />} />
+      </Route>
+      <Route
+        path="suggestions"
+        handle={{
+          title: 'Chord Suggester',
+          icon: <Icon name="suggest" />,
+          hasSettings: true,
+        }}
+        element={
+          <MidiMessageManagerProvider namespace="chord-suggester" source="internal">
+            <ChordSuggester />
+            <DrawerOutlet aria-label="Chord Suggester Settings" placement="right" size="lg" />
+          </MidiMessageManagerProvider>
+        }
+      >
+        <Route path="settings" element={<ChordSuggesterSettings />} />
       </Route>
       <Route
         path="chord-dictionary"

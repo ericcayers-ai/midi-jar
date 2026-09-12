@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
 
     steps:
       - name: Check out Git repository
@@ -24,6 +24,11 @@ jobs:
           cache: npm
           registry-url: 'https://npm.pkg.github.com'
           scope: '@la-jarre-a-son'
+
+      - name: Set up Python for the locked node-gyp
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: Install dependencies
         run: npm ci

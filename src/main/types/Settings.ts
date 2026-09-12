@@ -51,6 +51,29 @@ export type ChordQuizSettings = {
   displayIntervals: boolean;
 };
 
+export type ChordSuggesterSettings = {
+  tonic: string;
+  mode: string;
+  style: 'pop' | 'jazz' | 'classical' | 'modal';
+  suggestionCount: number;
+  extensionComplexity: 'triads' | 'sevenths' | 'extended';
+  autoHelperMode: 'simple' | 'advanced';
+  autoScaleScope: 'common' | 'all';
+  autoEvidence: 'balanced' | 'notes' | 'chords';
+  autoMinimumConfidence: number;
+  autoRegisterWhileRecording: boolean;
+  allowOmissions: boolean;
+  useSustain: boolean;
+  detectOnRelease: boolean;
+  displayKeyboard: boolean;
+  displayNotation: boolean;
+  displayReason: boolean;
+  showHistory: boolean;
+  considerPreviousChord: boolean;
+  audition: boolean;
+  auditionOutput: string;
+};
+
 export type CircleOfFifthsSettings = {
   scale: 'major' | 'minor';
   highlightSector: 'chord' | 'notes';
@@ -97,6 +120,7 @@ export type Settings = {
   general: GeneralSettings;
   chordDisplay: ChordDisplaySettings[];
   chordQuiz: ChordQuizSettings;
+  chordSuggester: ChordSuggesterSettings;
   circleOfFifths: CircleOfFifthsSettings;
   chordDictionary: ChordDictionarySettings;
   notation: NotationSettings;

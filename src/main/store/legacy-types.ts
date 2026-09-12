@@ -270,3 +270,38 @@ export type v1_7_0_Settings = {
   circleOfFifths: v1_2_0_CircleOfFifthsSettings;
   notation: v1_2_0_NotationSettings;
 };
+
+export type v1_8_0_ChordSuggesterSettings = {
+  tonic: string;
+  mode: string;
+  style: 'pop' | 'jazz' | 'classical' | 'modal';
+  suggestionCount: number;
+  extensionComplexity: 'triads' | 'sevenths' | 'extended';
+  allowOmissions: boolean;
+  useSustain: boolean;
+  detectOnRelease: boolean;
+  displayKeyboard: boolean;
+  displayNotation: boolean;
+  displayReason: boolean;
+  showHistory: boolean;
+  considerPreviousChord: boolean;
+  audition: boolean;
+  auditionOutput: string;
+};
+
+export type v1_8_0_Settings = v1_7_0_Settings & {
+  chordSuggester: v1_8_0_ChordSuggesterSettings;
+};
+
+/* v1.9.0 - added recordable automatic harmonic context */
+export type v1_9_0_ChordSuggesterSettings = v1_8_0_ChordSuggesterSettings & {
+  autoHelperMode: 'simple' | 'advanced';
+  autoScaleScope: 'common' | 'all';
+  autoEvidence: 'balanced' | 'notes' | 'chords';
+  autoMinimumConfidence: number;
+  autoRegisterWhileRecording: boolean;
+};
+
+export type v1_9_0_Settings = Omit<v1_8_0_Settings, 'chordSuggester'> & {
+  chordSuggester: v1_9_0_ChordSuggesterSettings;
+};

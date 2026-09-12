@@ -43,6 +43,7 @@ MIDI Jar includes:
 - A Chord Display module, to display a piano and monitor chords being played
 - A Circle of Fifths highly customizatble
 - A Chord Quiz module, with different modes and settings to train
+- A Chord Suggester module, to name the current chord and rank musically sensible next chords
 - A HTTP/Websocket server to include modules externally (in OBS Browser source for instance)
 - Running at startup
 - Running in background (no window, only Tray icon)
@@ -278,6 +279,25 @@ You can customize its rendering by adding/removing sections of the wheel:
 
 _NOTE: The Circle of Fifths is usually for displaying notes, not chords. But i found that it was also suited for chords, and particularly visualizing resolutions between degrees. Any chord in a same angular part of the circle will tend to resolve to the first degree in the scale. This module is more a personal vision than a standard representation. Don't hesitate to disable the sections you don't need._
 
+## Chord Suggester
+
+Chord Suggester listens to the same internal MIDI stream as the other modules. It displays the detected chord, its degree in a selected tonic and scale, and a deterministic ranked list of possible next chords.
+
+Use **Record key + scale** to capture a passage of changing chords. Press **Stop & register** to infer and register the most likely tonic, scale, and mode automatically. Simple auto helper mode searches the common modes; Advanced auto helper mode can search the complete Tonal scale catalog, choose note/root evidence, enforce a confidence threshold, and optionally update the context while recording.
+
+The scale selector is generated from Tonal's complete catalog (including pentatonic, hexatonic, heptatonic, symmetric, raga, bebop, and chromatic scales). The key selector includes all common and theoretical enharmonic tonic spellings. Scale fields are generated for every degree, not just seven-degree modes.
+
+The suggestions combine modal progression rules, tonal harmonic function, root motion, and a style preset:
+
+- `pop`: diatonic triads and familiar I–V–vi–IV movement
+- `jazz`: seventh and extended chords, with secondary dominants in the candidate list
+- `classical`: functional predominant and dominant movement with restrained extensions
+- `modal`: highlights characteristic degrees without forcing every progression toward a major-key cadence
+
+Open `/suggestions` from the home page. The Settings drawer controls tonic, scale type, style, up to twelve suggestions, extension complexity (triad through thirteenth), sustain and release detection, the keyboard/notation/history display, and audition. Every suggestion exposes its exact interval set; named Tonal chords use their standard symbol, while uncommon scale voicings remain available as custom note sets. Hover a suggestion to ghost-highlight its notes on the keyboard. To audition a suggestion, enable audition and choose one physical MIDI output; the app sends a short note-on/note-off phrase only to that output.
+
+The module is also available from the HTTP/WebSocket overlay at `/suggestions` for OBS Browser Source use.
+
 ## HTTP/WS Server - Overlay
 
 It enables integrating modules in an external web browser, or in an OBS Browser Source. For instance, you can integrate MIDI Jar in your Twitch stream, or load it on a different computer or phone for displaying chords while jamming, and even use it as a Desktop Wallpaper using [Lively Wallpaper](https://rocksdanister.github.io/lively/).
@@ -358,6 +378,7 @@ npm run package
 - [x] Circle of Fifths
 - [x] Chords Quiz
 - [x] Chord Dictionary
+- [x] Chord Suggester
 - [ ] Tonnetz chart
 - [ ] More Keyboard themes
 - [ ] Virtual Keyboard (use pc keyboard as a MIDI device)

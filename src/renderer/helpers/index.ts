@@ -6,3 +6,5 @@ export * from './debounce';
 export * from './midi';
 export * from './note';
 export * from './chords';
+export * from './suggestions';
+export * from './autoContext';

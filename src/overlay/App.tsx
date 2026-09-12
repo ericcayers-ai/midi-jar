@@ -8,6 +8,7 @@ import ChordDictionaryProvider from 'renderer/contexts/ChordDictionary';
 import { ThemeProvider } from '@la-jarre-a-son/ui';
 
 import ChordDisplay from 'renderer/views/ChordDisplay';
+import ChordSuggester from 'renderer/views/ChordSuggester';
 import ChordQuiz from 'renderer/views/ChordQuiz/ChordQuiz';
 import CircleOfFifths from 'renderer/views/CircleOfFifths';
 
@@ -33,6 +34,14 @@ export default function App() {
                     element={
                       <MidiMessageManagerProvider namespace="chord-quiz" source="websocket">
                         <ChordQuiz />
+                      </MidiMessageManagerProvider>
+                    }
+                  />
+                  <Route
+                    path="suggestions"
+                    element={
+                      <MidiMessageManagerProvider namespace="chord-suggester" source="websocket">
+                        <ChordSuggester />
                       </MidiMessageManagerProvider>
                     }
                   />

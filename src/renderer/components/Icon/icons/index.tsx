@@ -40,6 +40,7 @@ export const ICON_NAMES = [
   'search',
   'server',
   'settings',
+  'suggest',
   'star',
   'star-filled',
   'trash',
