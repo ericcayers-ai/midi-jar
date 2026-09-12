@@ -14,7 +14,7 @@ describe('encodeMidiFile', () => {
     expect(new DataView(bytes.buffer).getUint16(8)).toBe(0);
     expect(new DataView(bytes.buffer).getUint16(10)).toBe(1);
     expect(new DataView(bytes.buffer).getUint16(12)).toBe(480);
-    expect(new TextDecoder().decode(bytes.slice(14, 18))).toBe('MTrk');
+    expect(String.fromCharCode(...bytes.slice(14, 18))).toBe('MTrk');
     expect(bytes[bytes.length - 3]).toBe(0xff);
     expect(bytes[bytes.length - 2]).toBe(0x2f);
     expect(bytes[bytes.length - 1]).toBe(0);
