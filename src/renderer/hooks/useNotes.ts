@@ -425,7 +425,7 @@ export default function useNotes({
   }, [detectOnRelease]);
 
   const onMidiMessage = useCallback(
-    (message: MidiMessage) => {
+    (message: MidiMessage, timestamp: number, device: string) => {
       const cmd = getMidiCommand(message);
       const ch = getMidiChannel(message);
       const midi = getMidiNote(message);
