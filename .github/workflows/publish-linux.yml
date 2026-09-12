@@ -23,10 +23,10 @@ jobs:
           flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
       - name: Checkout git repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Node.js and NPM
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20.19.0
           cache: npm
