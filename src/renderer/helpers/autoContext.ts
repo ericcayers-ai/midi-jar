@@ -146,12 +146,9 @@ function observationScore(
     recordings.at(-1)?.root && pitchClass(recordings.at(-1)!.root!) === tonicChroma ? 0.16 : 0;
   const tonicBonus = recordings.length === 0 ? 0 : (tonicRootCount / recordings.length) * 0.24;
 
-  const baseScore =
-    evidence === 'notes'
-      ? noteScore
-      : evidence === 'chords'
-      ? rootScore
-      : noteScore * 0.62 + rootScore * 0.38;
+  let baseScore = noteScore * 0.62 + rootScore * 0.38;
+  if (evidence === 'notes') baseScore = noteScore;
+  if (evidence === 'chords') baseScore = rootScore;
 
   return baseScore + tonicBonus + cadenceBonus;
 }
