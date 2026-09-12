@@ -621,6 +621,11 @@ const ChordSuggester: React.FC = () => {
               </button>
             </div>
           </div>
+          {!suggestions.length && (
+            <p className={cx('suggestionEmpty')}>
+              Play three or more notes to identify a chord and unlock ranked next moves.
+            </p>
+          )}
           <div className={cx('suggestions')}>
             {suggestions.map((suggestion) => (
               <button

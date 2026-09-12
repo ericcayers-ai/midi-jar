@@ -185,12 +185,17 @@
   font-size: 0.78rem;
 }
 
-.hint {
+.hint,
+.suggestionEmpty {
   max-width: 28rem;
   margin: 1rem 0 0;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.52));
+  color: var(--muted-foreground, rgba(255, 255, 255, 0.68));
   font-size: 0.78rem;
   line-height: 1.55;
+}
+
+.suggestionEmpty {
+  max-width: 36rem;
 }
 
 .history {
@@ -369,8 +374,11 @@
 .contextActions button:disabled,
 .suggestionActions button:disabled,
 .progressionActions button:disabled {
+  border-color: var(--border, rgba(255, 255, 255, 0.25));
+  background: var(--card, rgba(255, 255, 255, 0.025));
+  color: var(--muted-foreground, rgba(255, 255, 255, 0.72));
   cursor: not-allowed;
-  opacity: 0.45;
+  opacity: 0.8;
 }
 
 .suggestionActions {
@@ -468,6 +476,16 @@
   .header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .progressionHeading,
+  .sectionHeading {
+    flex-direction: column;
+  }
+
+  .suggestionActions,
+  .progressionActions {
+    justify-content: flex-start;
   }
 
   .scaleNotes {
