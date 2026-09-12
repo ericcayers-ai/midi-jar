@@ -71,7 +71,7 @@
   min-width: 0;
   flex-direction: column;
   gap: 0.2rem;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.58));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   font-size: 0.72rem;
   line-height: 1.35;
 }
@@ -88,7 +88,7 @@
 .eyebrow,
 .sectionLabel {
   margin: 0;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.58));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -115,7 +115,7 @@
 
 .scaleNotes {
   max-width: 36rem;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.68));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.75rem;
   line-height: 1.7;
@@ -172,7 +172,7 @@
   align-items: baseline;
   gap: 0.6rem;
   margin-top: 1rem;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.66));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
 }
 
 .degree span:first-child {
@@ -189,7 +189,7 @@
 .suggestionEmpty {
   max-width: 28rem;
   margin: 1rem 0 0;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.68));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   font-size: 0.78rem;
   line-height: 1.55;
 }
@@ -214,7 +214,7 @@
   padding: 0.3rem 0.45rem;
   border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
   border-radius: 0.3rem;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.58));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   font-size: 0.75rem;
 }
 
@@ -239,7 +239,7 @@
 }
 
 .deterministic {
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.5));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.68rem;
   text-align: right;
@@ -298,7 +298,7 @@
 
 .suggestionIntervals {
   max-width: 100%;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.5));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.65rem;
   line-height: 1.4;
@@ -307,7 +307,7 @@
 
 .suggestionReason {
   min-height: 2.3em;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.58));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   font-size: 0.72rem;
   line-height: 1.35;
 }
@@ -376,7 +376,7 @@
 .progressionActions button:disabled {
   border-color: var(--border, rgba(255, 255, 255, 0.25));
   background: var(--card, rgba(255, 255, 255, 0.025));
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.72));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   cursor: not-allowed;
   opacity: 0.8;
 }
@@ -441,7 +441,7 @@
 .auditionMessage,
 .keyboardHint {
   margin: 0;
-  color: var(--muted-foreground, rgba(255, 255, 255, 0.52));
+  color: color-mix(in srgb, var(--foreground, #f4f4f5) 72%, transparent);
   font-size: 0.72rem;
 }
 
