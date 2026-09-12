@@ -73,6 +73,18 @@ const GeneralSettings: React.FC = () => {
               style={{ width: '64px' }}
             />
           </FormControlLabel>
+
+          <FormControlLabel
+            label="Bind address"
+            hint="Use 127.0.0.1 for local-only overlay access, or 0.0.0.0 for LAN OBS"
+            reverse
+          >
+            <Input
+              onChange={(value) => updateSetting('server.bindAddress', value)}
+              value={settings.server.bindAddress}
+              style={{ width: '120px' }}
+            />
+          </FormControlLabel>
         </FormFieldset>
       </Container>
     </>

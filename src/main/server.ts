@@ -19,6 +19,9 @@ type ServerState = {
 
 const debug = makeDebug('app:http');
 const app = express();
+const VALID_BIND_ADDRESSES = new Set(['127.0.0.1', 'localhost', '0.0.0.0', '::1', '::']);
+const normalizeBindAddress = (address: string) =>
+  VALID_BIND_ADDRESSES.has(address) ? address : '127.0.0.1';
 const state: ServerState = {
   started: false,
   port: null,
@@ -28,6 +31,16 @@ const state: ServerState = {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+if (process.env.NODE_ENV !== 'development') {
+  app.use((_req, res, next) => {
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ws: http:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
+    );
+    next();
+  });
+}
 
 class ServerError extends Error {
   status: number;
@@ -59,11 +72,11 @@ app.use((err: ServerError | Error, _req: Request, res: Response, _next: NextFunc
   res.send(`${__dirname}: ${err.message}`);
 });
 
-function initHttpServer(port: number): Promise<ReturnType<typeof app.listen>> {
+function initHttpServer(port: number, bindAddress: string): Promise<ReturnType<typeof app.listen>> {
   return new Promise((resolve, reject) => {
     try {
-      const httpServer = app.listen(port, () => {
-        debug(`HTTP server listening on port ${port}`);
+      const httpServer = app.listen(port, bindAddress, () => {
+        debug(`HTTP server listening on ${bindAddress}:${port}`);
         resolve(httpServer);
       });
 
@@ -102,9 +115,17 @@ function closeHttpServer(): Promise<void> {
   return Promise.resolve();
 }
 
-export function getAddresses(): string[] {
-  const nets = os.networkInterfaces();
+export function getAddresses(bindAddress = getSettings().server.bindAddress): string[] {
+  const normalizedBindAddress = normalizeBindAddress(bindAddress);
+  if (
+    normalizedBindAddress === '127.0.0.1' ||
+    normalizedBindAddress === 'localhost' ||
+    normalizedBindAddress === '::1'
+  ) {
+    return ['localhost'];
+  }
 
+  const nets = os.networkInterfaces();
   const ips = Object.keys(nets).map(
     (name) => nets[name]?.map((net) => (net.family === 'IPv4' ? net.address : null))
   );
@@ -135,7 +156,7 @@ export async function stopServer() {
 
 export async function startServer(): Promise<ServerState | null> {
   const settings = getSettings();
-  const { enabled, port } = settings.server;
+  const { enabled, port, bindAddress } = settings.server;
 
   if (enabled && port) {
     try {
@@ -143,7 +164,10 @@ export async function startServer(): Promise<ServerState | null> {
         await closeHttpServer();
       }
 
-      const httpServer = await initHttpServer(port);
+      const httpServer = await initHttpServer(
+        port,
+        normalizeBindAddress(bindAddress || '127.0.0.1')
+      );
       const wsServer = await initWSServer(httpServer);
 
       state.started = true;

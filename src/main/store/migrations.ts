@@ -22,6 +22,7 @@ import {
   v1_7_0_Settings,
   v1_8_0_Settings,
   v1_9_0_Settings,
+  v1_10_0_Settings,
 } from './legacy-types';
 
 const migrations: Migrations<StoreType> = {
@@ -372,6 +373,20 @@ const migrations: Migrations<StoreType> = {
       chordSuggester: {
         ...defaultChordSuggesterSettings,
         ...settings.chordSuggester,
+      },
+    };
+
+    store.set('settings', newSettings);
+  },
+  '1.10.0': (store: Conf<StoreType>) => {
+    store.set('version', '1.10.0');
+
+    const settings = store.get('settings') as unknown as v1_9_0_Settings;
+    const newSettings: v1_10_0_Settings = {
+      ...settings,
+      server: {
+        ...settings.server,
+        bindAddress: settings.server.bindAddress || '127.0.0.1',
       },
     };
 

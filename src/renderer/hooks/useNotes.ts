@@ -67,11 +67,15 @@ enum MidiActionTypes {
   NOTE_OFF = 'NOTE_OFF',
   SUSTAIN_ON = 'SUSTAIN_ON',
   SUSTAIN_OFF = 'SUSTAIN_OFF',
+  RESET = 'RESET',
 }
 
 interface MidiAction {
   type: MidiActionTypes;
   midi: number;
+  velocity?: number;
+  timestamp?: number;
+  device?: string;
 }
 
 enum ParametersActionTypes {
@@ -89,6 +93,14 @@ interface ParametersAction {
 
 type Action = MidiAction | ParametersAction;
 
+export type MidiEventSnapshot = {
+  command: 'note-on' | 'note-off' | 'sustain-on' | 'sustain-off';
+  midi: number;
+  velocity: number;
+  timestamp: number;
+  device: string;
+};
+
 interface State {
   params: {
     keySignature: KeySignatureConfig;
@@ -104,6 +116,7 @@ interface State {
   pitchClasses: string[];
   chords: ReturnType<typeof getChords>;
   sustained: boolean;
+  lastMidiEvent: MidiEventSnapshot | null;
 }
 
 function reducer(state: State, action: Action): State {
@@ -112,6 +125,14 @@ function reducer(state: State, action: Action): State {
   const { notes: keySignatureNotes } = state.params.keySignature;
 
   const fromMidi = (m: number) => getNoteInKeySignature(Note.fromMidi(m), keySignatureNotes);
+  const midiAction = action as MidiAction;
+  const eventSnapshot = (command: MidiEventSnapshot['command']): MidiEventSnapshot => ({
+    command,
+    midi: midiAction.midi,
+    velocity: midiAction.velocity ?? 0,
+    timestamp: midiAction.timestamp ?? performance.now(),
+    device: midiAction.device ?? 'unknown',
+  });
 
   switch (type) {
     case ParametersActionTypes.KEY_SIGNATURE_CHANGED: {
@@ -178,7 +199,7 @@ function reducer(state: State, action: Action): State {
       const useSustain = action.value as typeof state.params.useSustain;
 
       if (!useSustain) {
-        const midiNotes = state.playedMidiNotes;
+        const midiNotes = [...state.playedMidiNotes];
         midiNotes.sort(midiSortCompareFn);
         const notes = midiNotes.map(fromMidi);
         const pitchClasses = notes.map(Note.pitchClass);
@@ -235,6 +256,7 @@ function reducer(state: State, action: Action): State {
         sustainedMidiNotes,
         playedMidiNotes,
         chords,
+        lastMidiEvent: eventSnapshot('note-on'),
       };
     }
     case MidiActionTypes.NOTE_OFF: {
@@ -264,6 +286,7 @@ function reducer(state: State, action: Action): State {
         midiNotes,
         sustainedMidiNotes,
         chords,
+        lastMidiEvent: eventSnapshot('note-off'),
       };
     }
 
@@ -276,6 +299,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         sustained: true,
         sustainedMidiNotes: [],
+        lastMidiEvent: eventSnapshot('sustain-on'),
       };
     }
 
@@ -305,8 +329,22 @@ function reducer(state: State, action: Action): State {
         notes,
         pitchClasses,
         chords,
+        lastMidiEvent: eventSnapshot('sustain-off'),
       };
     }
+
+    case MidiActionTypes.RESET:
+      return {
+        ...state,
+        sustainedMidiNotes: [],
+        playedMidiNotes: [],
+        midiNotes: [],
+        notes: [],
+        pitchClasses: [],
+        chords: [],
+        sustained: false,
+        lastMidiEvent: eventSnapshot('note-off'),
+      };
 
     default:
       return state;
@@ -328,6 +366,7 @@ const defaultState: State = {
   pitchClasses: [],
   chords: [],
   sustained: false,
+  lastMidiEvent: null,
 };
 
 export default function useNotes({
@@ -397,14 +436,26 @@ export default function useNotes({
         value !== 0 &&
         (midiChannel === MIDI_CHANNEL_ALL || midiChannel === ch)
       ) {
-        dispatch({ type: MidiActionTypes.NOTE_ON, midi });
+        dispatch({
+          type: MidiActionTypes.NOTE_ON,
+          midi,
+          velocity: value,
+          timestamp,
+          device,
+        });
       }
 
       if (
         (cmd === MIDI_CMD_NOTE_OFF || (cmd === MIDI_CMD_NOTE_ON && value === 0)) && // MIDI RUNNING MODE => ALWAYS NOTE_ON messages with velocity 0
         (midiChannel === MIDI_CHANNEL_ALL || midiChannel === ch)
       ) {
-        dispatch({ type: MidiActionTypes.NOTE_OFF, midi });
+        dispatch({
+          type: MidiActionTypes.NOTE_OFF,
+          midi,
+          velocity: value,
+          timestamp,
+          device,
+        });
       }
 
       if (
@@ -412,12 +463,38 @@ export default function useNotes({
         midi === MIDI_CC_SUSTAIN &&
         (midiChannel === MIDI_CHANNEL_ALL || midiChannel === ch)
       ) {
-        if (value === 0) {
-          dispatch({ type: MidiActionTypes.SUSTAIN_OFF, midi });
+        if (value <= 63) {
+          dispatch({
+            type: MidiActionTypes.SUSTAIN_OFF,
+            midi,
+            velocity: value,
+            timestamp,
+            device,
+          });
         }
-        if (value === 127) {
-          dispatch({ type: MidiActionTypes.SUSTAIN_ON, midi });
+        if (value >= 64) {
+          dispatch({
+            type: MidiActionTypes.SUSTAIN_ON,
+            midi,
+            velocity: value,
+            timestamp,
+            device,
+          });
         }
+      }
+
+      if (
+        cmd === MIDI_CMD_CC &&
+        (midi === 0x78 || midi === 0x7b) &&
+        (midiChannel === MIDI_CHANNEL_ALL || midiChannel === ch)
+      ) {
+        dispatch({
+          type: MidiActionTypes.RESET,
+          midi,
+          velocity: value,
+          timestamp,
+          device,
+        });
       }
     },
     [midiChannel, dispatch]

@@ -1,6 +1,6 @@
 <img src="assets/icon.png" align="right" alt="MIDI Jar logo" width="192" height="192" />
 
-# [MIDI Jar](https://github.com/la-jarre-a-son/midi-jar)
+# [MIDI Jar](https://github.com/ericcayers-ai/midi-jar)
 
 MIDI Jar is a tool box for musicians, learners, streamers, that want to route MIDI message between devices, and display a piano or monitor chords while playing, and integrate it on a video or on a Twitch stream with OBS.
 
@@ -10,7 +10,7 @@ MIDI Jar is a tool box for musicians, learners, streamers, that want to route MI
 
 ## Releases
 
-Check out the releases on Github: [Releases](https://github.com/la-jarre-a-son/midi-jar/releases)
+Check out the releases on Github: [Releases](https://github.com/ericcayers-ai/midi-jar/releases)
 
 ### Unsigned App
 
@@ -394,7 +394,7 @@ npm run package
 This project is fully open to contribution and it would be appreciated to have some feedbacks and new ideas.
 Please feel free to open an issue or open a Merge request.
 
-For any UI or UX bug, please [Open an issue](https://github.com/la-jarre-a-son/midi-jar/issues).
+For any UI or UX bug, please [Open an issue](https://github.com/ericcayers-ai/midi-jar/issues).
 
 If you discover unexpected Chord detection, please see [tonaljs/tonal issues](https://github.com/tonaljs/tonal/issues) and contribute to make it work perfectly.
 

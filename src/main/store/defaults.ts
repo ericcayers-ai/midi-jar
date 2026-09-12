@@ -64,6 +64,7 @@ export const defaultChordQuizSettings: ChordQuizSettings = {
 
 export const defaultChordSuggesterSettings: ChordSuggesterSettings = {
   tonic: 'C',
+  input: '',
   mode: 'ionian',
   style: 'pop',
   suggestionCount: 3,
@@ -73,6 +74,7 @@ export const defaultChordSuggesterSettings: ChordSuggesterSettings = {
   autoEvidence: 'balanced',
   autoMinimumConfidence: 0.45,
   autoRegisterWhileRecording: false,
+  autoApplyPolicy: 'ask',
   allowOmissions: true,
   useSustain: true,
   detectOnRelease: true,
@@ -146,6 +148,7 @@ export const defaults: StoreType = {
     server: {
       enabled: true,
       port: 25011,
+      bindAddress: '127.0.0.1',
     },
   },
 };

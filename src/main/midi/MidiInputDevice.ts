@@ -58,6 +58,16 @@ export class MidiInputDevice extends EventEmitter {
     if (this.input.isPortOpen()) this.input.closePort();
   }
 
+  reset() {
+    const timestamp = performance.now();
+    for (let channel = 0; channel < 16; channel += 1) {
+      const message: MidiMessage = [0xb0 + channel, 0x7b, 0];
+      for (let i = 0; i < this.handlers.length; i += 1) {
+        this.handlers[i](message, timestamp, this.name);
+      }
+    }
+  }
+
   onMessage(_deltaTime: number, message: MidiMessage) {
     const timestamp = performance.now();
     for (let i = 0; i < this.handlers.length; i += 1) {

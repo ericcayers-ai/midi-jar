@@ -5,25 +5,30 @@ on:
 
 jobs:
   publish:
-    if: ${{ github.repository_owner == 'la-jarre-a-son' }}
+    if: ${{ github.repository == 'ericcayers-ai/midi-jar' }}
 
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
 
     steps:
       - name: Checkout git repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Node.js and NPM
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20.19.0
           cache: npm
           registry-url: 'https://npm.pkg.github.com'
           scope: '@la-jarre-a-son'
+
+      - name: Set up Python for native dependencies
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: Install dependencies
         run: npm ci

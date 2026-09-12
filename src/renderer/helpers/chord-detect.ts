@@ -16,7 +16,10 @@ const getOmissions = (chordType: ChordType) => {
   return chordType.intervals.filter((interval: string) => interval.endsWith('*'));
 };
 
-type ChordTypeWithOmission = ChordType & { omissions: string[]; omissionChroma: string };
+type ChordTypeWithOmission = ChordType & {
+  omissions: string[];
+  omissionChroma: string;
+};
 
 const chordTypesWithOmissions = all().map((chordType: ChordType): ChordTypeWithOmission => {
   const omissions = getOmissions(chordType);
@@ -93,7 +96,10 @@ function findMatches(
           name: `${baseNote}${chordName}/${tonic}`,
         });
       } else if (hasOmissions) {
-        found.push({ weight: DETECT_OMISSION_SCORE * weight, name: `${baseNote}${chordName}` });
+        found.push({
+          weight: DETECT_OMISSION_SCORE * weight,
+          name: `${baseNote}${chordName}`,
+        });
       } else {
         found.push({ weight, name: `${baseNote}${chordName}` });
       }
@@ -109,7 +115,7 @@ type DetectOptions = {
 };
 export function detect(source: string[], options: Partial<DetectOptions> = {}): string[] {
   const notes = source.map((n) => note(n).pc).filter((x) => x);
-  if (note.length === 0) {
+  if (notes.length === 0) {
     return [];
   }
 

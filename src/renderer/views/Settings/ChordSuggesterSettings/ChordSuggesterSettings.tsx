@@ -17,7 +17,7 @@ import { fields } from './constants';
 
 const ChordSuggesterSettings: React.FC = () => {
   const { settings, updateSetting, resetSettings } = useSettings();
-  const { outputs } = useMidiRouting();
+  const { outputs, inputs } = useMidiRouting();
   const config = settings.chordSuggester;
   const physicalOutputOptions = useMemo(
     () => [
@@ -27,6 +27,18 @@ const ChordSuggesterSettings: React.FC = () => {
         .map((output) => ({ value: output.name, label: output.name })),
     ],
     [outputs]
+  );
+  const inputOptions = useMemo(
+    () => [
+      { value: '', label: 'Any connected MIDI input' },
+      ...inputs
+        .filter((input) => input.connected || input.name === config.input)
+        .map((input) => ({
+          value: input.name,
+          label: `${input.name}${input.connected ? '' : ' (waiting)'}`,
+        })),
+    ],
+    [config.input, inputs]
   );
 
   return (
@@ -41,6 +53,17 @@ const ChordSuggesterSettings: React.FC = () => {
               options={fields.tonic.choices}
               onChange={(value: string) => updateSetting('chordSuggester.tonic', value)}
               value={config.tonic}
+            />
+          </FormField>
+
+          <FormField
+            label="MIDI input"
+            hint="Remember this device and recover it automatically after hot-plug"
+          >
+            <Select
+              options={inputOptions}
+              onChange={(value: string) => updateSetting('chordSuggester.input', value)}
+              value={config.input}
             />
           </FormField>
 
@@ -94,6 +117,17 @@ const ChordSuggesterSettings: React.FC = () => {
               options={fields.autoHelperMode.choices}
               onChange={(value: string) => updateSetting('chordSuggester.autoHelperMode', value)}
               value={config.autoHelperMode}
+            />
+          </FormField>
+
+          <FormField
+            label="Context registration"
+            hint="Choose whether recording may change the selected key and scale"
+          >
+            <Select
+              options={fields.autoApplyPolicy.choices}
+              onChange={(value: string) => updateSetting('chordSuggester.autoApplyPolicy', value)}
+              value={config.autoApplyPolicy}
             />
           </FormField>
 

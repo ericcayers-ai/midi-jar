@@ -57,7 +57,7 @@ const Layout: React.FC = () => {
                   block
                   as="a"
                   intent="primary"
-                  href={`https://github.com/la-jarre-a-son/midi-jar/releases/tag/v${updateInfo.version}`}
+                  href={`https://github.com/ericcayers-ai/midi-jar/releases/tag/v${updateInfo.version}`}
                   target="_blank"
                 >
                   Go to release page

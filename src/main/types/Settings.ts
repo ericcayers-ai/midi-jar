@@ -53,6 +53,7 @@ export type ChordQuizSettings = {
 
 export type ChordSuggesterSettings = {
   tonic: string;
+  input: string;
   mode: string;
   style: 'pop' | 'jazz' | 'classical' | 'modal';
   suggestionCount: number;
@@ -62,6 +63,7 @@ export type ChordSuggesterSettings = {
   autoEvidence: 'balanced' | 'notes' | 'chords';
   autoMinimumConfidence: number;
   autoRegisterWhileRecording: boolean;
+  autoApplyPolicy: 'auto' | 'ask' | 'locked';
   allowOmissions: boolean;
   useSustain: boolean;
   detectOnRelease: boolean;
@@ -109,6 +111,7 @@ export type NotationSettings = {
 export type ServerSettings = {
   enabled: boolean;
   port: number;
+  bindAddress: string;
 };
 
 export type GeneralSettings = {

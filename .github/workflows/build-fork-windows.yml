@@ -1,0 +1,51 @@
+name: Build fork Windows artifact
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    if: github.repository == 'ericcayers-ai/midi-jar'
+    runs-on: windows-2022
+
+    steps:
+      - name: Check out this fork only
+        uses: actions/checkout@v4
+        with:
+          repository: ericcayers-ai/midi-jar
+          ref: feature/chord-suggester
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.0
+          registry-url: https://npm.pkg.github.com
+          scope: '@la-jarre-a-son'
+          cache: npm
+
+      - name: Set up Python for native dependencies
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Windows installer
+        run: npm run package
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: midi-jar-windows-feature-chord-suggester
+          path: release/build/*
+          if-no-files-found: error

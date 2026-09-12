@@ -142,7 +142,7 @@ export default class MenuBuilder {
         {
           label: 'Report Bug',
           click() {
-            shell.openExternal('https://github.com/la-jarre-a-son/midi-jar/issues');
+            shell.openExternal('https://github.com/ericcayers-ai/midi-jar/issues');
           },
         },
       ],

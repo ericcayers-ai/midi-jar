@@ -146,4 +146,16 @@ export const useMidiRouting = () => {
   return context;
 };
 
+const emptyMidiRouting: MidiRoutingContextInterface = {
+  inputs: [],
+  outputs: [],
+  wires: [],
+  refreshDevices: () => undefined,
+  clearRoutes: () => undefined,
+  addRoute: () => undefined,
+  deleteRoute: () => undefined,
+};
+
+export const useOptionalMidiRouting = () => useContext(MidiRoutingContext) ?? emptyMidiRouting;
+
 export default MidiRoutingProvider;

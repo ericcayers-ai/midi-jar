@@ -65,6 +65,13 @@ export const fields = {
       { value: 'advanced', label: 'Advanced auto helper' },
     ],
   },
+  autoApplyPolicy: {
+    choices: [
+      { value: 'auto', label: 'Auto-apply detected context' },
+      { value: 'ask', label: 'Ask before changing settings' },
+      { value: 'locked', label: 'Show detection only (locked)' },
+    ],
+  },
   autoScaleScope: {
     choices: [
       { value: 'common', label: 'Common scales' },

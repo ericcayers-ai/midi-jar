@@ -1,3 +1,17 @@
+# 1.10.0 (Unreleased)
+
+## Features
+- **Chord Suggester**: duration- and velocity-weighted key/scale evidence with published profile ensembles, posterior alternatives, and causal smoothing.
+- **Chord Suggester**: explicit Auto, Ask, and Locked context-registration policies; evidence mass and alternative candidates are visible.
+- **Chord Suggester**: remembers a MIDI input, reconnects after hot-plug, previews suggestions locally, triggers suggestions with number keys, and builds/export progressions as MIDI.
+- **MIDI**: handles sustain-controller thresholds, all-notes-off messages, and resets active note state when an input disappears.
+- **Security**: production windows use context isolation, sandboxing, disabled node integration, and restricted navigation; overlay binding defaults to localhost.
+- **Fork**: package metadata, updater metadata, issue links, release conditions, and Windows build workflow target `ericcayers-ai/midi-jar`.
+
+## Fixes
+- Replaced the unavailable private `@la-jarre-a-son/nlf` alias and private `conf` alias with public package metadata so the lockfile no longer requires those packages.
+- Fixed empty-note chord detection and state mutation while toggling sustain.
+
 # 1.9.0 (Unreleased)
 
 ## Features

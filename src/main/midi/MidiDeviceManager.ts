@@ -91,6 +91,7 @@ export class MidiDeviceManager extends EventEmitter {
       if (inputs.indexOf(input.name) <= -1) {
         if (input instanceof MidiInputDevice && input.connected) {
           input.connected = false;
+          input.reset();
           input.close();
           changed = true;
         }

@@ -7,4 +7,5 @@ export * from './midi';
 export * from './note';
 export * from './chords';
 export * from './suggestions';
+export * from './midiExport';
 export * from './autoContext';
