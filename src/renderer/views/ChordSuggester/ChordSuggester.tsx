@@ -122,6 +122,7 @@ const ChordSuggester: React.FC = () => {
     settings,
     suggesterRouteInput,
     updateSettings,
+    wires,
   ]);
 
   const inferContext = useCallback(
@@ -154,7 +155,7 @@ const ChordSuggester: React.FC = () => {
         setAutoStatus(
           `Registered ${context.tonic} · ${context.scaleName} (${Math.round(
             context.confidence * 100
-          )}% posterior).`
+          )}% relative posterior).`
         );
         return;
       }
@@ -173,7 +174,7 @@ const ChordSuggester: React.FC = () => {
         setAutoStatus(
           `Registered ${context.tonic} · ${context.scaleName} (${Math.round(
             context.confidence * 100
-          )}% posterior).`
+          )}% relative posterior).`
         );
       } catch {
         appliedContext.current = null;
@@ -189,7 +190,7 @@ const ChordSuggester: React.FC = () => {
         setAutoStatus(
           `Detected ${context.tonic} · ${context.scaleName} (${Math.round(
             context.confidence * 100
-          )}% posterior); settings are locked.`
+          )}% relative posterior); settings are locked.`
         );
         return;
       }
@@ -284,13 +285,18 @@ const ChordSuggester: React.FC = () => {
   const recordButtonLabel = isRecording ? 'Stop & register' : 'Record key + scale';
   let recordState = 'Simple mode: stop recording to register the most likely context.';
   if (isRecording) recordState = `${recordedChords.length} chord changes captured`;
-  if (!isRecording && autoContext) {
-    recordState = `Registered ${autoContext.tonic} · ${autoContext.scaleName}`;
+  if (!isRecording && pendingContext) {
+    recordState = `Review ${pendingContext.tonic} · ${pendingContext.scaleName}`;
+  } else if (!isRecording && autoContext) {
+    recordState =
+      config.autoApplyPolicy === 'locked'
+        ? `Detected ${autoContext.tonic} · ${autoContext.scaleName}`
+        : `Registered ${autoContext.tonic} · ${autoContext.scaleName}`;
   }
   let recordDetail = 'The helper will set the tonic and scale automatically.';
   if (isRecording) recordDetail = 'Play at least two different chords, then stop.';
   if (!isRecording && autoContext) {
-    recordDetail = `${Math.round(autoContext.confidence * 100)}% posterior · ${
+    recordDetail = `${Math.round(autoContext.confidence * 100)}% relative posterior · ${
       autoContext.chordCount
     } chords analyzed · ${autoContext.evidenceMass.toFixed(1)} evidence mass`;
   }
@@ -422,13 +428,11 @@ const ChordSuggester: React.FC = () => {
       if (outputReady) {
         window.midi.audition(config.auditionOutput, notesToMidi(suggestion.chord.notes));
       }
-      setAuditionMessage(
-        outputReady
-          ? `Previewed and sent ${suggestion.symbol} to ${config.auditionOutput}.`
-          : previewed
-          ? `Previewed ${suggestion.symbol} locally.`
-          : 'Audio preview is unavailable in this environment.'
-      );
+      let message = 'Audio preview is unavailable in this environment.';
+      if (outputReady)
+        message = `Previewed and sent ${suggestion.symbol} to ${config.auditionOutput}.`;
+      else if (previewed) message = `Previewed ${suggestion.symbol} locally.`;
+      setAuditionMessage(message);
     },
     [config.audition, config.auditionOutput, notesToMidi, previewNotes]
   );
@@ -488,7 +492,16 @@ const ChordSuggester: React.FC = () => {
   useEffect(() => {
     const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (
+        event.repeat ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        (event.target instanceof HTMLElement &&
+          (['INPUT', 'SELECT', 'TEXTAREA'].includes(event.target.tagName) ||
+            event.target.isContentEditable))
+      )
+        return;
       const index = keys.indexOf(event.key);
       const suggestion = index >= 0 ? suggestions[index] : undefined;
       if (!suggestion) return;
@@ -618,7 +631,6 @@ const ChordSuggester: React.FC = () => {
                 key={`${suggestion.symbol}-${suggestion.roman}`}
                 onClick={() => handleSuggestionClick(suggestion)}
                 onMouseEnter={() => setActiveSuggestion(suggestion)}
-                onMouseLeave={() => setActiveSuggestion(null)}
                 onFocus={() => setActiveSuggestion(suggestion)}
                 aria-label={`Try ${suggestion.symbol}, ${suggestion.reason}`}
               >

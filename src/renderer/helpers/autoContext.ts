@@ -122,7 +122,7 @@ function scalePitchClasses(tonic: string, scaleType: string) {
   const cached = scaleCache.get(cacheKey);
   if (cached) return cached;
 
-  const notes = Scale.get(`${tonic} ${scaleNameForType(scaleType)}`).notes;
+  const { notes } = Scale.get(`${tonic} ${scaleNameForType(scaleType)}`);
   const result = new Set(
     notes.map((note) => pitchClass(note)).filter((chroma): chroma is number => chroma !== null)
   );
@@ -290,12 +290,14 @@ function observationScore(
   const finalRoot = recordings.at(-1)?.root;
   const cadence = pitchClass(finalRoot) === tonicPc ? 0.12 : 0;
 
-  const score =
-    selectedEvidence === 'notes'
-      ? profile * 0.62 + membership * 0.28 + tonicRoot * 0.1
-      : selectedEvidence === 'chords'
-      ? roots * 0.58 + bass * 0.2 + tonicRoot * 0.1 + membership * 0.12
-      : profile * 0.42 + membership * 0.22 + roots * 0.18 + bass * 0.08 + tonicRoot * 0.1;
+  let score: number;
+  if (selectedEvidence === 'notes') {
+    score = profile * 0.62 + membership * 0.28 + tonicRoot * 0.1;
+  } else if (selectedEvidence === 'chords') {
+    score = roots * 0.58 + bass * 0.2 + tonicRoot * 0.1 + membership * 0.12;
+  } else {
+    score = profile * 0.42 + membership * 0.22 + roots * 0.18 + bass * 0.08 + tonicRoot * 0.1;
+  }
 
   return score + cadence;
 }

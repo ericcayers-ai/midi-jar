@@ -7,26 +7,27 @@ export type ProgressionChord = {
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 function variableLength(value: number) {
-  let buffer = value & 0x7f;
-  const bytes = [];
-  while ((value >>= 7)) {
-    buffer <<= 8;
-    buffer |= (value & 0x7f) | 0x80;
-  }
-  while (true) {
-    bytes.push(buffer & 0xff);
-    if (buffer & 0x80) buffer >>= 8;
-    else break;
+  let remaining = Math.max(0, Math.floor(value));
+  const bytes = [remaining % 128];
+  remaining = Math.floor(remaining / 128);
+  while (remaining > 0) {
+    bytes.unshift((remaining % 128) + 128);
+    remaining = Math.floor(remaining / 128);
   }
   return bytes;
 }
 
 function writeUint32(value: number) {
-  return [(value >>> 24) & 0xff, (value >>> 16) & 0xff, (value >>> 8) & 0xff, value & 0xff];
+  return [
+    Math.floor(value / 2 ** 24) % 256,
+    Math.floor(value / 2 ** 16) % 256,
+    Math.floor(value / 2 ** 8) % 256,
+    value % 256,
+  ];
 }
 
 function writeUint16(value: number) {
-  return [(value >>> 8) & 0xff, value & 0xff];
+  return [Math.floor(value / 256) % 256, value % 256];
 }
 
 function validNotes(notes: number[]) {
